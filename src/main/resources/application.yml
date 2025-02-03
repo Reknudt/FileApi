@@ -1,0 +1,52 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/countbytesdb
+    username: pguser
+    password: pgpass
+  flyway.enabled: true
+  flyway:
+    locations: classpath:db.migrations
+    schemas: file
+    url: jdbc:postgresql://localhost:5432/countbytesdb
+    user: pguser
+    password: pgpass
+    baselineOnMigrate: true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        id:
+          new_generator_mappings: false
+    show-sql: true
+  application:
+    name: readandcount
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:8080/realms/Demo-realm
+#springdoc:
+#  swagger-ui:
+#    oauth:
+#      client-id: springboot-microservice
+#      client-secret: QTEqwJp5740HihWQb2smtFZtlC26vkOe
+
+keycloak:
+  realm: Demo-realm
+  auth-server-url: http://localhost:8081
+  resource: springboot-microservice
+  credentials:
+    secret: QTEqwJp5740HihWQb2smtFZtlC26vkOe
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+      springframework:
+        jdbc:
+          core: DEBUG
+        security: DEBUG
