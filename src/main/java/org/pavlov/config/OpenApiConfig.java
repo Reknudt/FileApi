@@ -13,8 +13,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "Bytes Count System Api",
-                description = "API системы подсчета байтов в файлах",
+                title = "Document Control Api",
+                description = "API хранения и управления файлами",
                 version = "1.0.0",
                 contact = @Contact(
                         name = "Pavlov Kirill",

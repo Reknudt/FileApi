@@ -21,8 +21,7 @@ spring:
         id:
           new_generator_mappings: false
     show-sql: true
-  application:
-    name: readandcount
+
 #  security:
 #    oauth2:
 #      resourceserver:

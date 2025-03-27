@@ -1,4 +1,4 @@
-package org.pavlov.dto;
+package org.pavlov.model;
 
 import lombok.Getter;
 import lombok.Setter;

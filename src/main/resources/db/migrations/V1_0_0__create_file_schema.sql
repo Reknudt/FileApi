@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `files` (
+CREATE TABLE IF NOT EXISTS `files` (    --change name to files
 
     `id` SERIAL8 NOT NULL,
     `data` BYTEA NOT NULL,

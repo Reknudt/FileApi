@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS `user` (
+
+    `id` SERIAL8 NOT NULL,
+    `name` VARCHAR NOT NULL UNIQUE,
+    `email` VARCHAR NOT NULL UNIQUE,
+    `age` INT NOT NULL,
+    constraint file_pk PRIMARY KEY (id)
+
+) DEFAULT CHARSET=UTF8;

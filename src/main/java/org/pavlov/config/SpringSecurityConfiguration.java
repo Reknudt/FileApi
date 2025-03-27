@@ -66,11 +66,11 @@ public class SpringSecurityConfiguration {
 
         http.authorizeHttpRequests(requests -> {
 //            requests.requestMatchers("/api/v1/employee/**").hasAnyAuthority("user", "admin");
-            requests.requestMatchers("/api/v1/tasks/**").hasAuthority("admin");
-            requests.requestMatchers("/api/v1/employees/**").hasAuthority("user");
+//            requests.requestMatchers("/api/v1/tasks/**").hasAuthority("admin");
+//            requests.requestMatchers("/api/v1/employees/**").hasAuthority("user");
 //            requests.requestMatchers("/api/v1/employees/**").access(AuthorizationManagers
 //                    .allOf(AuthorityAuthorizationManager.hasAuthority("user"), AuthorityAuthorizationManager.hasAuthority("admin")));
-            requests.requestMatchers("/api/v1/**").authenticated();
+//            requests.requestMatchers("/api/v1/**").authenticated();
             requests.anyRequest().permitAll();
         });
 
