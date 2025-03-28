@@ -16,7 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,12 +51,13 @@ public class FileController {
             Long totalSize = countService.countCharsInFileByDivide(file);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Uploaded the file successfully: " + file.getOriginalFilename() + ", file contains: " + totalSize + " bytes"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
+//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
         }
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Получение файла по ID", description = "Для получения отправьте ID")
     public ResponseEntity<byte[]> getByID(@PathVariable Long id) {
         File file = fileService.getFile(id);
@@ -71,22 +72,22 @@ public class FileController {
     }
 
 
-    @PutMapping("assignUser/{id}")
-    @Operation(summary = "Assign user to file", description = "Provide user id as path variable and file's id " +
-            "as a parameter to assign new user to task")
-    @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
-    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-    public void assignUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
-        fileService.assignUser(id, taskId);
-    }
-
-    @PutMapping("removeTask/{id}")
-    @Operation(summary = "Remove user from file", description = "Provide user id and task id to remove user from file")
-    @ApiResponse(responseCode = "200", description = "Employee updated", content = @Content)
-    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-    public void removeUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
-        fileService.removeUser(id, taskId);
-    }
+//    @PutMapping("assignUser/{id}")
+//    @Operation(summary = "Assign user to file", description = "Provide user id as path variable and file's id " +
+//            "as a parameter to assign new user to task")
+//    @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
+//    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
+//    public void assignUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
+//        fileService.assignUser(id, taskId);
+//    }
+//
+//    @PutMapping("removeTask/{id}")
+//    @Operation(summary = "Remove user from file", description = "Provide user id and task id to remove user from file")
+//    @ApiResponse(responseCode = "200", description = "Employee updated", content = @Content)
+//    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
+//    public void removeUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
+//        fileService.removeUser(id, taskId);
+//    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

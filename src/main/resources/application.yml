@@ -3,17 +3,17 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/countbytesdb
+    url: jdbc:postgresql://localhost:5432/dpspring
     username: pguser
     password: pgpass
-  flyway.enabled: true
-  flyway:
-    locations: classpath:db.migrations
-    schemas: file
-    url: jdbc:postgresql://localhost:5432/countbytesdb
-    user: pguser
-    password: pgpass
-    baselineOnMigrate: true
+#  flyway.enabled: true
+#  flyway:
+#    locations: classpath:db.migrations
+#    schemas: file
+#    url: jdbc:postgresql://localhost:5432/dpspring
+#    user: pguser
+#    password: pgpass
+#    baselineOnMigrate: true
   jpa:
     properties:
       hibernate:

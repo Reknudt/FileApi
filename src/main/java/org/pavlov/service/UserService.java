@@ -30,31 +30,33 @@ public class UserService {
 
         user.setName(userRequest.getName());
         user.setPassword(userRequest.getPassword());
-        user.setAge(userRequest.getAge());
+        user.setEmail(user.getEmail());
+        user.setPhone(user.getPhone());
+        user.setDateOfBirth(userRequest.getDateOfBirth());
 
         userRepository.save(user);
     }
 
-    @Transactional
-    public void updateTaskList(Long id, List<Task> tasks) {
-        User employee = findByIdOrThrow(id);
-        employee.setTasks(tasks);
-        employeeRepository.save(employee);
-    }
+//    @Transactional
+//    public void updateTaskList(Long id, List<Task> tasks) {
+//        User employee = findByIdOrThrow(id);
+//        employee.setTasks(tasks);
+//        employeeRepository.save(employee);
+//    }
 
-    @Transactional
-    public void updateTasksById(Long id, List<Long> taskIds) {
-        User user = findByIdOrThrow(id);
-        List<Task> newTasks = new ArrayList<>(List.of());
-
-        for (Long taskId : taskIds) {
-            Task task = taskService.findByIdOrThrow(taskId);
-            newTasks.add(task);
-        }
-
-        user.setTasks(newTasks);
-        userRepository.save(user);
-    }
+//    @Transactional
+//    public void updateTasksById(Long id, List<Long> taskIds) {
+//        User user = findByIdOrThrow(id);
+//        List<Task> newTasks = new ArrayList<>(List.of());
+//
+//        for (Long taskId : taskIds) {
+//            Task task = taskService.findByIdOrThrow(taskId);
+//            newTasks.add(task);
+//        }
+//
+//        user.setTasks(newTasks);
+//        userRepository.save(user);
+//    }
 
     @Transactional
     public User getUser(Long id) {
@@ -71,35 +73,35 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public Optional<List<Task>> getUserTasks(Long id) {
-        User user = findByIdOrThrow(id);
-        List<Task> tasks = user.getTasks();
-
-        return Optional.ofNullable(user);
-    }
-    
-
-    @Transactional
-    public void assignTask(Long id, Long taskId) {
-        User employee = findByIdOrThrow(id);
-        Task newTask = taskService.findByIdOrThrow(taskId);
-
-        List<Task> taskList = employee.getTasks();
-        taskList.add(newTask);
-        employee.setTasks(taskList);
-        employeeRepository.save(employee);
-    }
-
-    @Transactional
-    public void removeTask(Long id, Long taskId) {
-        User employee = findByIdOrThrow(id);
-        Task newTask = taskService.findByIdOrThrow(taskId);
-
-        List<Task> taskList = employee.getTasks();
-        taskList.remove(newTask);
-        employee.setTasks(taskList);
-        employeeRepository.save(employee);
-    }
+//    public Optional<List<Task>> getUserTasks(Long id) {
+//        User user = findByIdOrThrow(id);
+//        List<Task> tasks = user.getTasks();
+//
+//        return Optional.ofNullable(user);
+//    }
+//
+//
+//    @Transactional
+//    public void assignTask(Long id, Long taskId) {
+//        User employee = findByIdOrThrow(id);
+//        Task newTask = taskService.findByIdOrThrow(taskId);
+//
+//        List<Task> taskList = employee.getTasks();
+//        taskList.add(newTask);
+//        employee.setTasks(taskList);
+//        employeeRepository.save(employee);
+//    }
+//
+//    @Transactional
+//    public void removeTask(Long id, Long taskId) {
+//        User employee = findByIdOrThrow(id);
+//        Task newTask = taskService.findByIdOrThrow(taskId);
+//
+//        List<Task> taskList = employee.getTasks();
+//        taskList.remove(newTask);
+//        employee.setTasks(taskList);
+//        employeeRepository.save(employee);
+//    }
 
     public User findByIdOrThrow(Long id) {
         return userRepository.findById(id)

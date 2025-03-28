@@ -7,12 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.pavlov.model.Employee;
 import org.pavlov.model.File;
-import org.pavlov.model.Task;
 import org.pavlov.model.User;
-import org.pavlov.response.TaskResponse;
-import org.pavlov.service.EmployeeService;
 import org.pavlov.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,8 +27,8 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/employees")
-@Tag(name = "Взаимодействие с сотрудниками")
+@RequestMapping("/api/v1/users")
+@Tag(name = "User API")
 public class UserController {
 
     private final UserService userService;
@@ -62,12 +58,12 @@ public class UserController {
         return userService.getUser(id);
     }
 
-    @GetMapping("tasks/{id}")
-    @Operation(summary = "Get files by user id")
-    @ApiResponse(responseCode = "200", description = "Request succeed", content = @Content)
-    public Optional<List<File>> getEmployeeTasksByID(@PathVariable Long id) {
-        return userService.getUserFiles(id);
-    }
+//    @GetMapping("tasks/{id}")
+//    @Operation(summary = "Get files by user id")
+//    @ApiResponse(responseCode = "200", description = "Request succeed", content = @Content)
+//    public Optional<List<File>> getEmployeeTasksByID(@PathVariable Long id) {
+//        return userService.getUserFiles(id);
+//    }
 
     @GetMapping
 //    @PreAuthorize("hasAuthority('user') and hasAuthority('visitor')")

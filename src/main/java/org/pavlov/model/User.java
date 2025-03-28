@@ -1,6 +1,7 @@
 package org.pavlov.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,31 +19,46 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 public class User implements Serializable {
 
     @Schema(description = "User id")
+    @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Schema(description = "User name")
+    @Column(name = "name")
     @NotNull(message = "Name must be not null.")
     @Size(max = 255, message = "Name length must be smaller than 255 symbols.")
     private String name;
 
     @Schema(description = "User's encrypted password")
+    @Column(name = "password")
     @NotNull(message = "Password must be not null.")
     private String password;
 
-    @Schema(description = "User's age'")
-    @Min(16)
-    private Integer age;
+    @Schema(description = "User's email")
+    @Column(name = "email")
+    @NotNull(message = "Email must not be null.")
+    private String email;
+
+    @Schema(description = "User's phone number")
+    @Column(name = "phone")
+    @NotNull(message = "Phone must not be null.")
+    private String phone;
+
+    @Schema(description = "User's date of birth")
+    @Column(name = "date_of_birth")
+    @Temporal(TemporalType.DATE)
+    private LocalDate dateOfBirth;
 
 //    @ManyToMany
 //    @JoinTable(
