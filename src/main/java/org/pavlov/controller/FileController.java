@@ -83,8 +83,8 @@ public class FileController {
     }
 
     @GetMapping("/user/{userId}")
-    @Operation(summary = "Get file by id", description = "Provide `id` and `userId` to download file")
-    public List<File> getAllUserFilesInfo(@PathVariable Long userId) {
+    @Operation(summary = "Get file by userId", description = "Provide `id` and `userId` to download file")
+    public List<FileInfoDto> getAllUserFilesInfo(@PathVariable Long userId) {
         return fileService.getFilesByUserId(userId);
     }
 
@@ -96,7 +96,7 @@ public class FileController {
     }
 
     @PutMapping("/{id}/assignUser")
-    @Operation(summary = "Assign user to file", description = "Provide file `id` and user `id` to assign")
+    @Operation(summary = "Assign user to file", description = "Provide file `id` and `userId` to assign")
     @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
     @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
     public void assignUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
@@ -104,7 +104,7 @@ public class FileController {
     }
 
     @PutMapping("{id}/removeUser")
-    @Operation(summary = "Remove user from file", description = "Provide file `id` and user `id` to remove")
+    @Operation(summary = "Remove user from file", description = "Provide file `id` and `userId` to remove")
     @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
     @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
     public void removeUser(@PathVariable Long id, @RequestParam @Valid Long userId) {

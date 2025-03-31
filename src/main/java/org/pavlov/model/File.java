@@ -43,9 +43,7 @@ public class File implements Serializable {
     @NotBlank(message = "File type must not be empty.")
     private String type;
 
-//    @JsonIgnore
-//    @ManyToMany(mappedBy = "files")
-//    private List<User> users;
+    //date of upload
 
     @ManyToMany
     @JoinTable(

@@ -46,10 +46,9 @@ public class UserController {
     @PutMapping("/{id}")
 //    @PreAuthorize("hasAuthority('user')")
     @Operation(summary = "Update user")
-    @ApiResponse(responseCode = "200", description = "user updated", content = @Content)
+    @ApiResponse(responseCode = "200", description = "User updated", content = @Content)
     @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-    public void updateEmployee(@PathVariable Long id,
-                               @RequestBody @Valid User userRequest) {
+    public void updateEmployee(@PathVariable Long id, @RequestBody @Valid User userRequest) {
         userService.updateUser(id, userRequest);
     }
 
