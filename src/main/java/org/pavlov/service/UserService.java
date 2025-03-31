@@ -2,7 +2,9 @@ package org.pavlov.service;
 
 import lombok.AllArgsConstructor;
 import org.pavlov.exception.ResourceNotFoundException;
+import org.pavlov.model.File;
 import org.pavlov.model.User;
+import org.pavlov.repository.FileRepository;
 import org.pavlov.repository.UserRepository;
 import org.pavlov.repository.UserRepository;
 import org.pavlov.service.UserService;
@@ -18,6 +20,9 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+//    private final FileRepository fileRepository;
+//    private final FileService fileService;
+
 
     @Transactional
     public void createUser(User user) {
@@ -81,26 +86,27 @@ public class UserService {
 //    }
 //
 //
-//    @Transactional
-//    public void assignTask(Long id, Long taskId) {
-//        User employee = findByIdOrThrow(id);
-//        Task newTask = taskService.findByIdOrThrow(taskId);
+
+//    @jakarta.transaction.Transactional
+//    public void assignUser(Long id, Long userId) {
+//        File file = fileService.findByIdOrThrow(id);
+//        User newUser = findByIdOrThrow(userId);
 //
-//        List<Task> taskList = employee.getTasks();
-//        taskList.add(newTask);
-//        employee.setTasks(taskList);
-//        employeeRepository.save(employee);
+//        List<User> userList = file.getUsers();
+//        userList.add(newUser);
+//        file.setUsers(userList);
+//        fileRepository.save(file);
 //    }
 //
-//    @Transactional
-//    public void removeTask(Long id, Long taskId) {
-//        User employee = findByIdOrThrow(id);
-//        Task newTask = taskService.findByIdOrThrow(taskId);
+//    @jakarta.transaction.Transactional
+//    public void removeUser(Long id, Long userId) {
+//        File file = fileService.findByIdOrThrow(id);
+//        User newUser = findByIdOrThrow(userId);
 //
-//        List<Task> taskList = employee.getTasks();
-//        taskList.remove(newTask);
-//        employee.setTasks(taskList);
-//        employeeRepository.save(employee);
+//        List<User> userList = file.getUsers();
+//        userList.remove(newUser);
+//        file.setUsers(userList);
+//        fileRepository.save(file);
 //    }
 
     public User findByIdOrThrow(Long id) {

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.pavlov.model.File;
 import org.pavlov.model.User;
+import org.pavlov.service.FileService;
 import org.pavlov.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/users")
 @Tag(name = "User API")
 public class UserController {
 
@@ -57,6 +58,22 @@ public class UserController {
     public User getByUserID(@PathVariable Long id) {
         return userService.getUser(id);
     }
+
+//    @PutMapping("/{id}/assignUser")
+//    @Operation(summary = "Assign user to file", description = "Provide file `id` and user `id` to assign")
+//    @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
+//    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
+//    public void assignUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
+//        userService.assignUser(id, userId);
+//    }
+//
+//    @PutMapping("{id}/removeUser")
+//    @Operation(summary = "Remove user from file", description = "Provide file `id` and user `id` to remove")
+//    @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
+//    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
+//    public void removeUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
+//        userService.removeUser(id, userId);
+//    }
 
 //    @GetMapping("tasks/{id}")
 //    @Operation(summary = "Get files by user id")

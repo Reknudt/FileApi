@@ -1,6 +1,10 @@
 package org.pavlov.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,4 +42,15 @@ public class File implements Serializable {
     @Schema(description = "File type")
     @NotBlank(message = "File type must not be empty.")
     private String type;
+
+//    @JsonIgnore
+//    @ManyToMany(mappedBy = "files")
+//    private List<User> users;
+
+    @ManyToMany
+    @JoinTable(
+            name = "file_user",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "file_id"))
+    private List<User> users;
 }
