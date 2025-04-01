@@ -73,7 +73,7 @@ public class FileService {
 
     public FileInfoDto getFileInfo(Long id) {
 //        return fileRepository.findFileInfo(id);
-        return fileMapper.toFileInfoDto(findByIdOrThrow(id));
+        return fileMapper.entityToFileInfoDto(findByIdOrThrow(id));
     }
 
     public List<File> getAllFiles() {

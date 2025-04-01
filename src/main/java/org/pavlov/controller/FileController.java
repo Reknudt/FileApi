@@ -75,6 +75,13 @@ public class FileController {
                 .body(file.getData());
     }
 
+    /// ///////////////////////////////////////////// //////////////////////////////////////////
+    @GetMapping("/{id}/content")
+    @Operation(summary = "Get file content", description = "Provide file `id` and page parameters")
+    public FileInfoDto getFileContentById(@PathVariable Long id) {
+        return fileService.getFileContent(id);
+    }
+
     @GetMapping("/{id}/about")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Get info about file", description = "Provide file `id`")
