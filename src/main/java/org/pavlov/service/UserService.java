@@ -5,6 +5,9 @@ import org.pavlov.exception.ResourceNotFoundException;
 import org.pavlov.mapper.UserMapper;
 import org.pavlov.model.User;
 import org.pavlov.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,10 +52,10 @@ public class UserService {
         return findByIdOrThrow(id);
     }
 
-    @Transactional
-    public List<User> getAllUsers() {
-        return userRepository.findAll().stream()
-                .toList();
+    public List<User> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> usersPage = userRepository.findAll(pageable);
+        return usersPage.getContent();
     }
 
     public void deleteUser(Long id) {

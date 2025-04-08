@@ -12,6 +12,8 @@ import org.pavlov.model.File;
 import org.pavlov.model.User;
 import org.pavlov.repository.FileRepository;
 import org.pavlov.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -104,8 +106,9 @@ public class FileService {
         return fileMapper.entityToFileInfoDto(findByIdOrThrow(id));
     }
 
-    public List<File> getAllFiles() {
-        return fileRepository.findAll();
+    public Page<FileInfoDto> getAllFiles(Pageable pageable) {
+        Page<File> files = fileRepository.findAll(pageable);
+        return files.map(fileMapper::entityToFileInfoDto);
     }
 
     public void deleteFile(Long id) {

@@ -3,13 +3,10 @@ package org.pavlov.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.pavlov.model.File;
 import org.pavlov.model.User;
-import org.pavlov.service.FileService;
 import org.pavlov.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -50,6 +46,14 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
     public void updateEmployee(@PathVariable Long id, @RequestBody @Valid User userRequest) {
         userService.updateUser(id, userRequest);
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all users", description = "Provide all the users")
+    public List<User> getAllUsersInfo(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return userService.getAllUsers(page, size);
     }
 
     @GetMapping("/{id}")
@@ -80,14 +84,6 @@ public class UserController {
 //    public Optional<List<File>> getEmployeeTasksByID(@PathVariable Long id) {
 //        return userService.getUserFiles(id);
 //    }
-
-    @GetMapping
-//    @PreAuthorize("hasAuthority('user') and hasAuthority('visitor')")
-    @Operation(summary = "Get all users info")
-    @ApiResponse(responseCode = "200", description = "Request succeed", content = @Content)
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

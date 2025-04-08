@@ -14,6 +14,7 @@ import org.pavlov.dto.response.ResponseMessage;
 import org.pavlov.model.File;
 import org.pavlov.service.CountService;
 import org.pavlov.service.FileService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -45,19 +48,6 @@ public class FileController {
     private final CountService countService;
     private final FileService fileService;
 
-    @GetMapping("/{id}/pages")
-    public ResponseEntity<PageFileResponse> getFileContentByPage(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "1024") int pageSize,
-            @RequestParam(defaultValue = "1") int pageNumber) {
-        try {
-            PageFileResponse response = fileService.getFileContentByPage(id, pageSize, pageNumber);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -71,6 +61,19 @@ public class FileController {
         } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}/pages")
+    public ResponseEntity<PageFileResponse> getFileContentByPage(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1024") int pageSize,
+            @RequestParam(defaultValue = "1") int pageNumber) {
+        try {
+            PageFileResponse response = fileService.getFileContentByPage(id, pageSize, pageNumber);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -102,11 +105,14 @@ public class FileController {
         return fileService.getFilesByUserId(userId);
     }
 
-    @GetMapping
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping
     @Operation(summary = "Get all files", description = "Provide all the files (for admin only)")
-    public List<File> getAllFilesInfo() {
-        return fileService.getAllFiles();
+    public Page<FileInfoDto> getAllFilesInfo(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return fileService.getAllFiles(pageable);
     }
 
     @PutMapping("/{id}/assignUser")
