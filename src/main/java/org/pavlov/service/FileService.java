@@ -4,14 +4,12 @@ package org.pavlov.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pavlov.dto.response.FileInfoDto;
-import org.pavlov.dto.response.FileReadDto;
 import org.pavlov.dto.response.PageFileResponse;
 import org.pavlov.exception.FileNotFoundException;
 import org.pavlov.mapper.FileMapper;
 import org.pavlov.model.File;
 import org.pavlov.model.User;
 import org.pavlov.repository.FileRepository;
-import org.pavlov.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.pavlov.util.Constant.ERROR_NOT_FOUND;
@@ -30,31 +28,21 @@ import static org.pavlov.util.Constant.ERROR_NOT_FOUND;
 public class FileService {
 
     private final FileRepository fileRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
     private final FileMapper fileMapper;
 
     public PageFileResponse getFileContentByPage(Long fileId, int pageSize, int pageNumber) {
         byte[] fileContent = findByIdOrThrow(fileId).getData();
 
-        // Преобразовать байты в строку с указанием кодировки
         String fileContentString = new String(fileContent, StandardCharsets.UTF_8);
-
-        // Рассчитать общее количество страниц
         int totalPages = (int) Math.ceil((double) fileContentString.length() / pageSize);
-
-        // Проверить номер страницы
         if (pageNumber < 1 || pageNumber > totalPages) {
             throw new RuntimeException("Номер страницы неверен");
         }
 
-        // Рассчитать начало и конец страницы
         int start = (pageNumber - 1) * pageSize;
         int end = Math.min(start + pageSize, fileContentString.length());
-
-        // Вырезать содержимое страницы
         String pageContentString = fileContentString.substring(start, end);
-
         return new PageFileResponse(pageContentString, pageNumber, totalPages);
     }
 
@@ -64,10 +52,6 @@ public class FileService {
         fileEntity.setName(fileName);
         fileEntity.setData(file.getBytes());
         fileEntity.setType(file.getContentType());
-//        Optional<Long> userId = userRepository.findByName(name);
-//        if(!userId.isEmpty()) {
-//            fileEntity.setUserId(userId.get());
-//        }
         return fileRepository.save(fileEntity);
     }
 
@@ -102,7 +86,6 @@ public class FileService {
     }
 
     public FileInfoDto getFileInfo(Long id) {
-//        return fileRepository.findFileInfo(id);
         return fileMapper.entityToFileInfoDto(findByIdOrThrow(id));
     }
 
@@ -136,6 +119,36 @@ public class FileService {
 //        user.setTasks(newTasks);
 //        userRepository.save(user);
 //    }
+
+    public void updateFileContentOnPage(Long fileId, int pageNumber, String newContent, int pageSize) {
+        File fileEntity = fileRepository.findById(fileId)
+                .orElseThrow(() -> new RuntimeException("File not found"));
+
+        byte[] currentContent = fileEntity.getData();
+        String currentContentString = new String(currentContent, StandardCharsets.UTF_8);
+        List<String> pages = splitContentIntoPages(currentContentString, pageSize);
+        pages.set(pageNumber - 1, newContent);
+        String updatedContent = String.join("", pages);
+
+        byte[] updatedContentBytes = updatedContent.getBytes(StandardCharsets.UTF_8);
+        fileEntity.setData(updatedContentBytes);
+        fileRepository.save(fileEntity);
+    }
+
+    private List<String> splitContentIntoPages(String content, int pageSize) {
+        List<String> pages = new ArrayList<>();
+        for (int i = 0; i < content.length(); i += pageSize) {
+            int end = Math.min(i + pageSize, content.length());
+            pages.add(content.substring(i, end));
+        }
+        return pages;
+    }
+
+    public void updateFileName(Long id, String newFileName) {
+        File fileEntity = findByIdOrThrow(id);
+        fileEntity.setName(newFileName);
+        fileRepository.save(fileEntity);
+    }
 
     File findByIdOrThrow(Long id) {
         return fileRepository.findById(id)
