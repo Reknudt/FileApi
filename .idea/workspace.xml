@@ -5,15 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91b4f669-08cf-49d6-aa8d-bd9275a504d0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/mapper/FileMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/dto/response/PageFileResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/controller/FileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/controller/FileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/model/File.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/model/File.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/mapper/FileMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/mapper/FileMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/mapper/UserMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/service/FileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/service/FileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/service/UserService.java" afterDir="false" />
+    </list>
+    <list id="9286043d-d8a9-4908-a96c-a23bf1d09eb4" name="local" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,20 +56,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "AMPLICODE_MAP_STRUCT_SUGGESTION_DISMISS": "true",
-    "Maven.FileApi [clean,package].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot Application.Main.executor": "Run",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;AMPLICODE_MAP_STRUCT_SUGGESTION_DISMISS&quot;: &quot;true&quot;,
+    &quot;Maven.FileApi [clean,package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.FileApi [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.FileApi [package].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.pavlov.dto.response" />
       <recent name="org.pavlov.service" />
       <recent name="org.pavlov.controller" />
     </key>
@@ -87,6 +93,7 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="91b4f669-08cf-49d6-aa8d-bd9275a504d0" name="Changes" comment="" />
+      <changelist id="9286043d-d8a9-4908-a96c-a23bf1d09eb4" name="local" comment="" />
       <created>1743063596797</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -108,7 +115,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743427489809</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Fix update API">
+      <option name="closed" value="true" />
+      <created>1743431724114</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1743431724114</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fix lombok with mapstruct">
+      <option name="closed" value="true" />
+      <created>1743488705234</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743488705234</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -137,6 +160,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Preparations for DP" />
     <MESSAGE value="Add assign functional" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add assign functional" />
+    <MESSAGE value="Fix update API" />
+    <MESSAGE value="Fix lombok with mapstruct" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix lombok with mapstruct" />
   </component>
 </project>

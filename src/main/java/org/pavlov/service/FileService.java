@@ -4,6 +4,8 @@ package org.pavlov.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pavlov.dto.response.FileInfoDto;
+import org.pavlov.dto.response.FileReadDto;
+import org.pavlov.dto.response.PageFileResponse;
 import org.pavlov.exception.FileNotFoundException;
 import org.pavlov.mapper.FileMapper;
 import org.pavlov.model.File;
@@ -15,6 +17,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.pavlov.util.Constant.ERROR_NOT_FOUND;
@@ -27,6 +31,30 @@ public class FileService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final FileMapper fileMapper;
+
+    public PageFileResponse getFileContentByPage(Long fileId, int pageSize, int pageNumber) {
+        byte[] fileContent = findByIdOrThrow(fileId).getData();
+
+        // Преобразовать байты в строку с указанием кодировки
+        String fileContentString = new String(fileContent, StandardCharsets.UTF_8);
+
+        // Рассчитать общее количество страниц
+        int totalPages = (int) Math.ceil((double) fileContentString.length() / pageSize);
+
+        // Проверить номер страницы
+        if (pageNumber < 1 || pageNumber > totalPages) {
+            throw new RuntimeException("Номер страницы неверен");
+        }
+
+        // Рассчитать начало и конец страницы
+        int start = (pageNumber - 1) * pageSize;
+        int end = Math.min(start + pageSize, fileContentString.length());
+
+        // Вырезать содержимое страницы
+        String pageContentString = fileContentString.substring(start, end);
+
+        return new PageFileResponse(pageContentString, pageNumber, totalPages);
+    }
 
     public File saveFile(MultipartFile file) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());

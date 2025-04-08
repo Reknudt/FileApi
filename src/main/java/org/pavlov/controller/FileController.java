@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.pavlov.dto.response.FileInfoDto;
+import org.pavlov.dto.response.FileReadDto;
+import org.pavlov.dto.response.PageFileResponse;
 import org.pavlov.dto.response.ResponseMessage;
 import org.pavlov.model.File;
 import org.pavlov.service.CountService;
@@ -20,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,6 +45,19 @@ public class FileController {
     private final CountService countService;
     private final FileService fileService;
 
+    @GetMapping("/{id}/pages")
+    public ResponseEntity<PageFileResponse> getFileContentByPage(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1024") int pageSize,
+            @RequestParam(defaultValue = "1") int pageNumber) {
+        try {
+            PageFileResponse response = fileService.getFileContentByPage(id, pageSize, pageNumber);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -52,8 +66,8 @@ public class FileController {
     public ResponseEntity<ResponseMessage> handleFileUpload(@RequestParam("file") MultipartFile file) {
         try {
             fileService.saveFile(file);
-            Long totalSize = countService.countCharsInFileByDivide(file);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Uploaded the file successfully: " + file.getOriginalFilename() + ", file contains: " + totalSize + " bytes"));
+//            Long totalSize = countService.countCharsInFileByDivide(file);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Uploaded file successfully: " + file.getOriginalFilename()));
         } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
@@ -73,13 +87,6 @@ public class FileController {
                         .build().toString())
                 .headers(headers)
                 .body(file.getData());
-    }
-
-    /// ///////////////////////////////////////////// //////////////////////////////////////////
-    @GetMapping("/{id}/content")
-    @Operation(summary = "Get file content", description = "Provide file `id` and page parameters")
-    public FileInfoDto getFileContentById(@PathVariable Long id) {
-        return fileService.getFileContent(id);
     }
 
     @GetMapping("/{id}/about")
