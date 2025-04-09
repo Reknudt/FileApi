@@ -5,10 +5,10 @@ import org.pavlov.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record FileInfoDto(
+public record FileVersionInfoDto(
         Long id,
+        Long fileId,
         String name,
-//        byte[] data,
         String type,
         LocalDateTime dateOfCreation,
         long version,

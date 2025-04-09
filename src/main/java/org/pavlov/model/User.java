@@ -31,34 +31,28 @@ import java.util.List;
 public class User implements Serializable {
 
     @Schema(description = "User id")
-    @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Schema(description = "User name")
-    @Column(name = "name")
     @NotNull(message = "Name must be not null.")
     @Size(max = 255, message = "Name length must be smaller than 255 symbols.")
     private String name;
 
     @Schema(description = "User's encrypted password")
-    @Column(name = "password")
     @NotNull(message = "Password must be not null.")
     private String password;
 
     @Schema(description = "User's email")
-    @Column(name = "email")
     @NotNull(message = "Email must not be null.")
     private String email;
 
     @Schema(description = "User's phone number")
-    @Column(name = "phone")
     @NotNull(message = "Phone must not be null.")
     private String phone;
 
     @Schema(description = "User's date of birth")
-    @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
     private LocalDate dateOfBirth;
 

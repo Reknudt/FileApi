@@ -7,12 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.pavlov.dto.response.FileInfoDto;
-import org.pavlov.dto.response.FileReadDto;
+import org.pavlov.dto.response.FileVersionInfoDto;
 import org.pavlov.dto.response.PageFileResponse;
 import org.pavlov.dto.response.ResponseMessage;
 import org.pavlov.model.File;
-import org.pavlov.service.CountService;
 import org.pavlov.service.FileService;
+import org.pavlov.service.FileVersionService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +36,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @AllArgsConstructor
@@ -46,24 +48,8 @@ import java.util.List;
 @Tag(name = "File API")
 public class FileController {
 
-    private final CountService countService;
+    private final FileVersionService fileVersionService;
     private final FileService fileService;
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Count bytes and save file", description = "Provide file to save")
-//    @ApiResponse
-    public ResponseEntity<ResponseMessage> handleFileUpload(@RequestParam("file") MultipartFile file) {
-        try {
-            fileService.saveFile(file);
-//            Long totalSize = countService.countCharsInFileByDivide(file);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Uploaded file successfully: " + file.getOriginalFilename()));
-        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
-        }
-    }
 
     @GetMapping("/{id}/pages")
     public ResponseEntity<PageFileResponse> getFileContentByPage(
@@ -88,7 +74,7 @@ public class FileController {
                 .contentType(MediaType.valueOf(file.getType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         ContentDisposition.attachment().filename(file.getName())
-                        .build().toString())
+                                .build().toString())
                 .headers(headers)
                 .body(file.getData());
     }
@@ -100,13 +86,13 @@ public class FileController {
         return fileService.getFileInfo(id);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user/{userId}")               //???????
     @Operation(summary = "Get file by userId", description = "Provide `id` and `userId` to download file")
     public List<FileInfoDto> getAllUserFilesInfo(@PathVariable Long userId) {
         return fileService.getFilesByUserId(userId);
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     @Operation(summary = "Get all files", description = "Provide all the files (for admin only)")
     public Page<FileInfoDto> getAllFilesInfo(
@@ -114,6 +100,22 @@ public class FileController {
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return fileService.getAllFiles(pageable);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Count bytes and save file", description = "Provide file to save")
+//    @ApiResponse
+    public ResponseEntity<ResponseMessage> handleFileUpload(@RequestParam("file") MultipartFile file,
+                                                            @RequestParam("dateOfCreation") Optional<LocalDateTime> dateTime) {
+        try {
+            fileService.saveFile(file, dateTime);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Uploaded file successfully: " + file.getOriginalFilename()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
+//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/assignUser")
@@ -131,6 +133,37 @@ public class FileController {
     public void removeUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
         fileService.removeUser(id, userId);
     }
+
+    //----
+
+    @GetMapping("/{id}/versions")
+    @Operation(summary = "Get all file versions", description = "Get all versions of a file")
+    public Page<FileVersionInfoDto> getAllFileVersions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam @Valid Long fileId) {
+        Pageable pageable = PageRequest.of(page, size);
+        return fileVersionService.getAllFileVersionsByFileId(pageable, fileId);
+    }
+
+    @GetMapping("/{id}/versions/{versionId}")
+    @Operation(summary = "Get specific file version", description = "Get a specific version of a file")
+    public FileVersionInfoDto getFileVersion(@PathVariable Long id, @PathVariable Long versionId) {
+        return fileVersionService.getFileVersionInfo(id, versionId);
+    }
+
+    @PatchMapping("/{id}/versions/{versionId}/restore")
+    @Operation(summary = "Restore file version", description = "Restore a specific version of a file")
+    public ResponseEntity<ResponseMessage> restoreFileVersion(@PathVariable Long id, @PathVariable Long versionId) {
+        try {
+            fileService.restoreFileVersion(id, versionId);
+            return ResponseEntity.ok(new ResponseMessage("File version restored successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    //--
 
     @PatchMapping("/{id}/content/page")
     @Operation(summary = "Update file content on a specific page", description = "Update the content of a file on a specific page")

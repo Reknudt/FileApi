@@ -4,12 +4,16 @@ package org.pavlov.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pavlov.dto.response.FileInfoDto;
+import org.pavlov.dto.response.FileVersionInfoDto;
 import org.pavlov.dto.response.PageFileResponse;
 import org.pavlov.exception.FileNotFoundException;
 import org.pavlov.mapper.FileMapper;
+import org.pavlov.mapper.FileVersionMapper;
 import org.pavlov.model.File;
+import org.pavlov.model.FileVersion;
 import org.pavlov.model.User;
 import org.pavlov.repository.FileRepository;
+import org.pavlov.repository.FileVersionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,8 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.pavlov.util.Constant.ERROR_NOT_FOUND;
 
@@ -28,8 +34,10 @@ import static org.pavlov.util.Constant.ERROR_NOT_FOUND;
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final FileVersionRepository fileVersionRepository;
     private final UserService userService;
     private final FileMapper fileMapper;
+    private final FileVersionMapper fileVersionMapper;
 
     public PageFileResponse getFileContentByPage(Long fileId, int pageSize, int pageNumber) {
         byte[] fileContent = findByIdOrThrow(fileId).getData();
@@ -37,7 +45,7 @@ public class FileService {
         String fileContentString = new String(fileContent, StandardCharsets.UTF_8);
         int totalPages = (int) Math.ceil((double) fileContentString.length() / pageSize);
         if (pageNumber < 1 || pageNumber > totalPages) {
-            throw new RuntimeException("Номер страницы неверен");
+            throw new RuntimeException("Invalid page number");
         }
 
         int start = (pageNumber - 1) * pageSize;
@@ -46,12 +54,13 @@ public class FileService {
         return new PageFileResponse(pageContentString, pageNumber, totalPages);
     }
 
-    public File saveFile(MultipartFile file) throws IOException {
+    public File saveFile(MultipartFile file, Optional<LocalDateTime> dateTime) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         File fileEntity = new File();
         fileEntity.setName(fileName);
         fileEntity.setData(file.getBytes());
         fileEntity.setType(file.getContentType());
+        fileEntity.setDateOfCreation(dateTime.orElse(LocalDateTime.now()));
         return fileRepository.save(fileEntity);
     }
 
@@ -95,7 +104,6 @@ public class FileService {
     }
 
     public void deleteFile(Long id) {
-        File file = findByIdOrThrow(id);
         fileRepository.deleteById(id);
     }
 
@@ -120,9 +128,10 @@ public class FileService {
 //        userRepository.save(user);
 //    }
 
-    public void updateFileContentOnPage(Long fileId, int pageNumber, String newContent, int pageSize) {
-        File fileEntity = fileRepository.findById(fileId)
-                .orElseThrow(() -> new RuntimeException("File not found"));
+    public void updateFileContentOnPage(Long id, int pageNumber, String newContent, int pageSize) {
+        File fileEntity = findByIdOrThrow(id);
+        System.out.println("file version: " + fileEntity.getVersion());
+        saveFileVersion(fileEntity);
 
         byte[] currentContent = fileEntity.getData();
         String currentContentString = new String(currentContent, StandardCharsets.UTF_8);
@@ -132,6 +141,7 @@ public class FileService {
 
         byte[] updatedContentBytes = updatedContent.getBytes(StandardCharsets.UTF_8);
         fileEntity.setData(updatedContentBytes);
+        fileEntity.setVersion(fileEntity.getVersion() + 1);
         fileRepository.save(fileEntity);
     }
 
@@ -146,8 +156,36 @@ public class FileService {
 
     public void updateFileName(Long id, String newFileName) {
         File fileEntity = findByIdOrThrow(id);
+
+        // Сохранение старой версии в таблицу версий
+        saveFileVersion(fileEntity);
+
+        // Обновление текущей версии
         fileEntity.setName(newFileName);
+        fileEntity.setVersion(fileEntity.getVersion() + 1);
         fileRepository.save(fileEntity);
+    }
+
+    public void restoreFileVersion(Long id, Long versionId) {
+        FileVersion fileVersionEntity = fileVersionRepository.findById(versionId)
+                .orElseThrow(() -> new RuntimeException("Version not found"));
+
+        File fileEntity = findByIdOrThrow(id);
+        fileEntity.setData(fileVersionEntity.getData());
+        fileEntity.setName(fileVersionEntity.getName());
+        fileEntity.setType(fileVersionEntity.getType());
+        fileEntity.setVersion(fileEntity.getVersion() + 1);
+        fileRepository.save(fileEntity);
+    }
+
+    private void saveFileVersion(File fileEntity) {
+        FileVersion fileVersionEntity = new FileVersion();
+        fileVersionEntity.setFileId(fileEntity.getId());
+        fileVersionEntity.setData(fileEntity.getData());
+        fileVersionEntity.setName(fileEntity.getName());
+        fileVersionEntity.setType(fileEntity.getType());
+        fileVersionEntity.setDateOfCreation(fileEntity.getDateOfCreation());
+        fileVersionRepository.save(fileVersionEntity);
     }
 
     File findByIdOrThrow(Long id) {
