@@ -212,5 +212,48 @@ public class FileController {
         }
     }
 
+    @DeleteMapping("/{id}/versions/{version}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete file version", description = "Provide file `id` and `version` to delete FileVersion")
+    @ApiResponse(responseCode = "204", description = "File deleted", content = @Content)
+    public ResponseEntity<ResponseMessage> deleteFileVersionById(@PathVariable("id") Long id, @PathVariable("version") long version) {
+        try {
+            fileService.deleteFileVersion(id, version);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseMessage("FileVersion with version " + version + " of file " + id + " successfully deleted"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+//                    new ResponseMessage("Could not delete fileVersion with Id " + version + "!"));
+        }
+    }
 
+    @DeleteMapping("/{id}/versions")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete all file versions", description = "Provide file `id` and `version` to delete FileVersion")
+    @ApiResponse(responseCode = "204", description = "File deleted", content = @Content)
+    public ResponseEntity<ResponseMessage> deleteFileVersion(@PathVariable Long id) {
+        try {
+            fileService.deleteFileVersions(id);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseMessage("FileVersions of file " + id + " successfully deleted"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
+                    new ResponseMessage("Could not delete fileVersions!"));
+        }
+    }
+
+    @DeleteMapping("/{id}/clear")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete file and its versions")
+    @ApiResponse(responseCode = "204", description = "File deleted", content = @Content)
+    public ResponseEntity<ResponseMessage> deleteFileAndVersions(@PathVariable Long id) {
+        try {
+            fileService.deleteAll(id);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseMessage("File " + id + " and its versions successfully deleted"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
+                    new ResponseMessage("Could not delete file with fileVersions!"));
+        }
+    }
 }

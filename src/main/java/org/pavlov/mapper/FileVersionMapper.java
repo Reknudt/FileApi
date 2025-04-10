@@ -13,6 +13,7 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface FileVersionMapper {
     @Mapping(target = "fileId", source = "file.id")
+    @Mapping(target = "id", ignore = true)
     FileVersion fileToFileVersion(File file);
 
     FileVersionInfoDto entityToFileVersionInfoDto(FileVersion fileVersion);

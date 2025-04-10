@@ -2,6 +2,8 @@ package org.pavlov.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -55,6 +57,11 @@ public class File implements Serializable {
     @Schema(description = "File version")
     @Positive
     private long version = 1;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FileStatus status;
+
 
     @ManyToMany
     @JoinTable(

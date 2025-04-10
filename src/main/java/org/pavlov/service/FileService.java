@@ -10,6 +10,7 @@ import org.pavlov.exception.FileNotFoundException;
 import org.pavlov.mapper.FileMapper;
 import org.pavlov.mapper.FileVersionMapper;
 import org.pavlov.model.File;
+import org.pavlov.model.FileStatus;
 import org.pavlov.model.FileVersion;
 import org.pavlov.model.User;
 import org.pavlov.repository.FileRepository;
@@ -95,6 +96,13 @@ public class FileService {
     }
 
     public FileInfoDto getFileInfo(Long id) {
+        File file = findByIdOrThrow(id);
+
+        if (file.getStatus() == FileStatus.DELETED) {
+//            return
+        }
+
+
         return fileMapper.entityToFileInfoDto(findByIdOrThrow(id));
     }
 
@@ -103,7 +111,27 @@ public class FileService {
         return files.map(fileMapper::entityToFileInfoDto);
     }
 
+    @Transactional
     public void deleteFile(Long id) {
+        File file = findByIdOrThrow(id);
+        file.setStatus(FileStatus.DELETED);
+        fileRepository.save(file);
+//        fileRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteFileVersion(Long id, long version) {
+        fileVersionRepository.deleteByFileIdAndVersion(id, version);
+    }
+
+    @Transactional
+    public void deleteFileVersions(Long id) {
+        fileVersionRepository.deleteByFileId(id);
+    }
+
+    @Transactional
+    public void deleteAll(Long id) {
+        fileVersionRepository.deleteByFileId(id);
         fileRepository.deleteById(id);
     }
 
