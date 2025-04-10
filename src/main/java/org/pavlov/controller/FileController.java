@@ -51,7 +51,8 @@ public class FileController {
     private final FileVersionService fileVersionService;
     private final FileService fileService;
 
-    @GetMapping("/{id}/pages")
+    @GetMapping("/{id}/content")
+    @Operation(summary = "Get file content by id", description = "Provide `id` and page parameters to access file content")
     public ResponseEntity<PageFileResponse> getFileContentByPage(
             @PathVariable Long id,
             @RequestParam(defaultValue = "1024") int pageSize,
@@ -66,7 +67,7 @@ public class FileController {
 
     @GetMapping("/{id}")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "Get file by id", description = "Provide id to download file")
+    @Operation(summary = "Get file download by id", description = "Provide id to download file")
     public ResponseEntity<byte[]> getById(@PathVariable Long id) {
         File file = fileService.getFile(id);
         HttpHeaders headers = new HttpHeaders();
@@ -87,7 +88,7 @@ public class FileController {
     }
 
     @GetMapping("/user/{userId}")               //???????
-    @Operation(summary = "Get file by userId", description = "Provide `id` and `userId` to download file")
+    @Operation(summary = "Get files info by userId", description = "Provide `id` and `userId` to get info about user's files")
     public List<FileInfoDto> getAllUserFilesInfo(@PathVariable Long userId) {
         return fileService.getFilesByUserId(userId);
     }
@@ -118,6 +119,8 @@ public class FileController {
         }
     }
 
+    //-- USERS
+
     @PutMapping("/{id}/assignUser")
     @Operation(summary = "Assign user to file", description = "Provide file `id` and `userId` to assign")
     @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
@@ -134,7 +137,7 @@ public class FileController {
         fileService.removeUser(id, userId);
     }
 
-    //----
+    //---- VERSIONS
 
     @GetMapping("/{id}/versions")
     @Operation(summary = "Get all file versions", description = "Get all versions of a file")
@@ -153,7 +156,7 @@ public class FileController {
     }
 
     @PatchMapping("/{id}/versions/{versionId}/restore")
-    @Operation(summary = "Restore file version", description = "Restore a specific version of a file")
+    @Operation(summary = "Restore file version", description = "Provide fileId and versionId to restore a specific version of a file")
     public ResponseEntity<ResponseMessage> restoreFileVersion(@PathVariable Long id, @PathVariable Long versionId) {
         try {
             fileService.restoreFileVersion(id, versionId);
@@ -165,15 +168,17 @@ public class FileController {
 
     //--
 
-    @PatchMapping("/{id}/content/page")
-    @Operation(summary = "Update file content on a specific page", description = "Update the content of a file on a specific page")
+    @PatchMapping("/{id}/content")
+    @Operation(summary = "Update file content on a specific page",
+            description = "Provide file id, content and page parameters to update the content of a file on a specific page")
     public ResponseEntity<ResponseMessage> updateFileContentOnPage(
             @PathVariable Long id,
             @RequestParam int pageNumber,
             @RequestParam(defaultValue = "1024") int pageSize,
+            @RequestParam("note") Optional<String> note,
             @RequestBody String newContent) {
         try {
-            fileService.updateFileContentOnPage(id, pageNumber, newContent, pageSize);
+            fileService.updateFileContentOnPage(id, pageNumber, pageSize, note, newContent);
             return ResponseEntity.ok(new ResponseMessage("File content updated successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
@@ -184,10 +189,11 @@ public class FileController {
     @Operation(summary = "Update file name", description = "Update the name of a file")
     public ResponseEntity<ResponseMessage> updateFileName(
             @PathVariable Long id,
+            @RequestParam("note") Optional<String> note,
             @RequestBody String newFileName) {
         try {
-            fileService.updateFileName(id, newFileName);
-            return ResponseEntity.ok(new ResponseMessage("File name updated successfully"));
+            fileService.updateFileName(id, note, newFileName);
+            return ResponseEntity.ok(new ResponseMessage("File name updated to " + newFileName + " successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
         }
@@ -205,4 +211,6 @@ public class FileController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not delete the file with Id " + id + "!"));
         }
     }
+
+
 }

@@ -12,5 +12,6 @@ public record FileVersionInfoDto(
         String type,
         LocalDateTime dateOfCreation,
         long version,
+        String note,
         List<User> users
 ) {}

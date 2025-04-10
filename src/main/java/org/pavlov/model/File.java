@@ -50,7 +50,7 @@ public class File implements Serializable {
 
     @Schema(description = "File's creation date")
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime dateOfCreation;
+    private LocalDateTime dateOfCreation = LocalDateTime.now();
 
     @Schema(description = "File version")
     @Positive

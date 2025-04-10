@@ -107,7 +107,7 @@ public class FileService {
         fileRepository.deleteById(id);
     }
 
-    //    @Transactional
+//    @Transactional
 //    public void updateTaskList(Long id, List<Task> tasks) {
 //        User employee = findByIdOrThrow(id);
 //        employee.setTasks(tasks);
@@ -128,10 +128,15 @@ public class FileService {
 //        userRepository.save(user);
 //    }
 
-    public void updateFileContentOnPage(Long id, int pageNumber, String newContent, int pageSize) {
+    public void updateFileContentOnPage(Long id, int pageNumber, int pageSize, Optional<String> note, String newContent) {
         File fileEntity = findByIdOrThrow(id);
-        System.out.println("file version: " + fileEntity.getVersion());
-        saveFileVersion(fileEntity);
+        FileVersion fileVersion = fileVersionMapper.fileToFileVersion(fileEntity);
+
+        if (note.isPresent()) {
+            fileVersion.setNote(note.get());
+        } else fileVersion.setNote("File content updated");
+
+        fileVersionRepository.save(fileVersion);
 
         byte[] currentContent = fileEntity.getData();
         String currentContentString = new String(currentContent, StandardCharsets.UTF_8);
@@ -154,11 +159,16 @@ public class FileService {
         return pages;
     }
 
-    public void updateFileName(Long id, String newFileName) {
+    public void updateFileName(Long id, Optional<String> note, String newFileName) {
         File fileEntity = findByIdOrThrow(id);
 
         // Сохранение старой версии в таблицу версий
-        saveFileVersion(fileEntity);
+        FileVersion fileVersion = fileVersionMapper.fileToFileVersion(fileEntity);
+        if (note.isPresent()) {
+            fileVersion.setNote(note.get());
+        } else fileVersion.setNote("File name updated");
+
+        fileVersionRepository.save(fileVersion);
 
         // Обновление текущей версии
         fileEntity.setName(newFileName);
@@ -171,21 +181,11 @@ public class FileService {
                 .orElseThrow(() -> new RuntimeException("Version not found"));
 
         File fileEntity = findByIdOrThrow(id);
-        fileEntity.setData(fileVersionEntity.getData());
-        fileEntity.setName(fileVersionEntity.getName());
-        fileEntity.setType(fileVersionEntity.getType());
-        fileEntity.setVersion(fileEntity.getVersion() + 1);
-        fileRepository.save(fileEntity);
-    }
+        fileEntity = fileMapper.fileVersionToFile(fileVersionEntity);
 
-    private void saveFileVersion(File fileEntity) {
-        FileVersion fileVersionEntity = new FileVersion();
-        fileVersionEntity.setFileId(fileEntity.getId());
-        fileVersionEntity.setData(fileEntity.getData());
-        fileVersionEntity.setName(fileEntity.getName());
-        fileVersionEntity.setType(fileEntity.getType());
-        fileVersionEntity.setDateOfCreation(fileEntity.getDateOfCreation());
-        fileVersionRepository.save(fileVersionEntity);
+        fileEntity.setVersion(fileEntity.getVersion() + 1);
+        fileEntity.setDateOfCreation(LocalDateTime.now());
+        fileRepository.save(fileEntity);
     }
 
     File findByIdOrThrow(Long id) {
