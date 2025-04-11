@@ -1,7 +1,9 @@
 package org.pavlov.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -89,6 +91,8 @@ public class FileController {
 
     @GetMapping("/user/{userId}")               //???????
     @Operation(summary = "Get files info by userId", description = "Provide `id` and `userId` to get info about user's files")
+    @ApiResponse(responseCode = "200", description = "OK",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FileInfoDto.class))))
     public List<FileInfoDto> getAllUserFilesInfo(@PathVariable Long userId) {
         return fileService.getFilesByUserId(userId);
     }
@@ -96,6 +100,8 @@ public class FileController {
     //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     @Operation(summary = "Get all files", description = "Provide all the files (for admin only)")
+    @ApiResponse(responseCode = "200", description = "OK",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileInfoDto.class)))
     public Page<FileInfoDto> getAllFilesInfo(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -106,16 +112,15 @@ public class FileController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Count bytes and save file", description = "Provide file to save")
-//    @ApiResponse
+    @Operation(summary = "Save file", description = "Provide file to save")
     public ResponseEntity<ResponseMessage> handleFileUpload(@RequestParam("file") MultipartFile file,
                                                             @RequestParam("dateOfCreation") Optional<LocalDateTime> dateTime) {
         try {
             fileService.saveFile(file, dateTime);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Uploaded file successfully: " + file.getOriginalFilename()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
-//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
+                    new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
         }
     }
 
@@ -141,32 +146,47 @@ public class FileController {
 
     @GetMapping("/{id}/versions")
     @Operation(summary = "Get all file versions", description = "Get all versions of a file")
+    @ApiResponse(responseCode = "200", description = "OK",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileVersionInfoDto.class)))
     public Page<FileVersionInfoDto> getAllFileVersions(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam @Valid Long fileId) {
+            @RequestParam @Valid Long id) {
         Pageable pageable = PageRequest.of(page, size);
-        return fileVersionService.getAllFileVersionsByFileId(pageable, fileId);
+        return fileVersionService.getAllFileVersionsByFileId(pageable, id);
     }
 
     @GetMapping("/{id}/versions/{versionId}")
     @Operation(summary = "Get specific file version", description = "Get a specific version of a file")
+    @ApiResponse(responseCode = "200", description = "OK",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileVersionInfoDto.class)))
     public FileVersionInfoDto getFileVersion(@PathVariable Long id, @PathVariable Long versionId) {
         return fileVersionService.getFileVersionInfo(id, versionId);
     }
 
-    @PatchMapping("/{id}/versions/{versionId}/restore")
-    @Operation(summary = "Restore file version", description = "Provide fileId and versionId to restore a specific version of a file")
-    public ResponseEntity<ResponseMessage> restoreFileVersion(@PathVariable Long id, @PathVariable Long versionId) {
+    @PatchMapping("/{id}/versions/{version}/restore")
+    @Operation(summary = "Restore file version", description = "Provide fileId and version to restore a specific version of a file")
+    public ResponseEntity<ResponseMessage> restoreFileVersion(@PathVariable Long id, @PathVariable Long version) {
         try {
-            fileService.restoreFileVersion(id, versionId);
+            fileService.restoreFileVersion(id, version);
             return ResponseEntity.ok(new ResponseMessage("File version restored successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
         }
     }
 
-    //--
+    //-- PATCH + DELETE
+
+    @PatchMapping("/{id}/restore")
+    @Operation(summary = "Restore file", description = "Provide fileId to restore deleted version")
+    public ResponseEntity<ResponseMessage> restoreFile(@PathVariable Long id) {
+        try {
+            fileService.restoreFile(id);
+            return ResponseEntity.ok(new ResponseMessage("File restored successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
+        }
+    }
 
     @PatchMapping("/{id}/content")
     @Operation(summary = "Update file content on a specific page",
@@ -222,8 +242,8 @@ public class FileController {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseMessage("FileVersion with version " + version + " of file " + id + " successfully deleted"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
-//                    new ResponseMessage("Could not delete fileVersion with Id " + version + "!"));
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
+                    new ResponseMessage("Could not delete fileVersion with Id " + version + "!"));
         }
     }
 

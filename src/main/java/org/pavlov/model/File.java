@@ -11,6 +11,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -58,10 +59,13 @@ public class File implements Serializable {
     @Positive
     private long version = 1;
 
-    @Column(nullable = false)
+    @Schema(description = "File status")
     @Enumerated(EnumType.STRING)
-    private FileStatus status;
+    private FileStatus status = FileStatus.OK;
 
+    @Schema(description = "Info about changes")
+    @Size(max = 255)
+    private String note = "Uploaded";
 
     @ManyToMany
     @JoinTable(

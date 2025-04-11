@@ -34,19 +34,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-//    @Transactional
-//    public void updateUser(Long id, User userRequest) {
-//        User user = findByIdOrThrow(id);
-//
-//        user.setName(userRequest.getName());
-//        user.setPassword(userRequest.getPassword());
-//        user.setEmail(user.getEmail());
-//        user.setPhone(user.getPhone());
-//        user.setDateOfBirth(userRequest.getDateOfBirth());
-//
-//        userRepository.save(user);
-//    }
-
     @Transactional
     public User getUser(Long id) {
         return findByIdOrThrow(id);

@@ -1,5 +1,6 @@
 package org.pavlov.dto.response;
 
+import org.pavlov.model.FileStatus;
 import org.pavlov.model.User;
 
 import java.time.LocalDateTime;
@@ -12,5 +13,6 @@ public record FileInfoDto(
         String type,
         LocalDateTime dateOfCreation,
         long version,
+        FileStatus status,
         List<User> users
 ) {}

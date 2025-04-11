@@ -1,10 +1,8 @@
 package org.pavlov.service;
 
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pavlov.dto.response.FileInfoDto;
-import org.pavlov.dto.response.FileVersionInfoDto;
 import org.pavlov.dto.response.PageFileResponse;
 import org.pavlov.exception.FileNotFoundException;
 import org.pavlov.mapper.FileMapper;
@@ -97,13 +95,7 @@ public class FileService {
 
     public FileInfoDto getFileInfo(Long id) {
         File file = findByIdOrThrow(id);
-
-        if (file.getStatus() == FileStatus.DELETED) {
-//            return
-        }
-
-
-        return fileMapper.entityToFileInfoDto(findByIdOrThrow(id));
+        return fileMapper.entityToFileInfoDto(file);
     }
 
     public Page<FileInfoDto> getAllFiles(Pageable pageable) {
@@ -135,47 +127,25 @@ public class FileService {
         fileRepository.deleteById(id);
     }
 
-//    @Transactional
-//    public void updateTaskList(Long id, List<Task> tasks) {
-//        User employee = findByIdOrThrow(id);
-//        employee.setTasks(tasks);
-//        employeeRepository.save(employee);
-//    }
-
-//    @Transactional
-//    public void updateTasksById(Long id, List<Long> taskIds) {
-//        User user = findByIdOrThrow(id);
-//        List<Task> newTasks = new ArrayList<>(List.of());
-//
-//        for (Long taskId : taskIds) {
-//            Task task = taskService.findByIdOrThrow(taskId);
-//            newTasks.add(task);
-//        }
-//
-//        user.setTasks(newTasks);
-//        userRepository.save(user);
-//    }
-
     public void updateFileContentOnPage(Long id, int pageNumber, int pageSize, Optional<String> note, String newContent) {
-        File fileEntity = findByIdOrThrow(id);
-        FileVersion fileVersion = fileVersionMapper.fileToFileVersion(fileEntity);
+        File file= findByIdOrThrow(id);
 
         if (note.isPresent()) {
-            fileVersion.setNote(note.get());
-        } else fileVersion.setNote("File content updated");
+            file.setNote(note.get());
+        } else file.setNote("File content updated");
 
-        fileVersionRepository.save(fileVersion);
-
-        byte[] currentContent = fileEntity.getData();
+        byte[] currentContent = file.getData();
         String currentContentString = new String(currentContent, StandardCharsets.UTF_8);
         List<String> pages = splitContentIntoPages(currentContentString, pageSize);
         pages.set(pageNumber - 1, newContent);
         String updatedContent = String.join("", pages);
 
         byte[] updatedContentBytes = updatedContent.getBytes(StandardCharsets.UTF_8);
-        fileEntity.setData(updatedContentBytes);
-        fileEntity.setVersion(fileEntity.getVersion() + 1);
-        fileRepository.save(fileEntity);
+        file.setData(updatedContentBytes);
+        file.setVersion(file.getVersion() + 1);
+        fileRepository.save(file);
+
+        fileVersionRepository.save(fileVersionMapper.fileToFileVersion(file));
     }
 
     private List<String> splitContentIntoPages(String content, int pageSize) {
@@ -188,20 +158,17 @@ public class FileService {
     }
 
     public void updateFileName(Long id, Optional<String> note, String newFileName) {
-        File fileEntity = findByIdOrThrow(id);
+        File file = findByIdOrThrow(id);
 
-        // Сохранение старой версии в таблицу версий
-        FileVersion fileVersion = fileVersionMapper.fileToFileVersion(fileEntity);
         if (note.isPresent()) {
-            fileVersion.setNote(note.get());
-        } else fileVersion.setNote("File name updated");
+            file.setNote(note.get());
+        } else file.setNote("File name updated");
 
-        fileVersionRepository.save(fileVersion);
+        file.setName(newFileName);
+        file.setVersion(file.getVersion() + 1);
+        fileRepository.save(file);
 
-        // Обновление текущей версии
-        fileEntity.setName(newFileName);
-        fileEntity.setVersion(fileEntity.getVersion() + 1);
-        fileRepository.save(fileEntity);
+        fileVersionRepository.save(fileVersionMapper.fileToFileVersion(file));
     }
 
     public void restoreFileVersion(Long id, Long versionId) {
@@ -214,6 +181,12 @@ public class FileService {
         fileEntity.setVersion(fileEntity.getVersion() + 1);
         fileEntity.setDateOfCreation(LocalDateTime.now());
         fileRepository.save(fileEntity);
+    }
+
+    public void restoreFile(Long id) {
+        File file = findByIdOrThrow(id);
+        file.setStatus(FileStatus.OK);
+        fileRepository.save(file);
     }
 
     File findByIdOrThrow(Long id) {

@@ -1,7 +1,9 @@
 package org.pavlov.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -50,6 +52,8 @@ public class UserController {
 
     @GetMapping
     @Operation(summary = "Get all users", description = "Provide all the users")
+    @ApiResponse(responseCode = "200", description = "OK",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = User.class))))
     public List<User> getAllUsersInfo(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -61,29 +65,6 @@ public class UserController {
     public User getByUserID(@PathVariable Long id) {
         return userService.getUser(id);
     }
-
-//    @PutMapping("/{id}/assignUser")
-//    @Operation(summary = "Assign user to file", description = "Provide file `id` and user `id` to assign")
-//    @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
-//    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-//    public void assignUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
-//        userService.assignUser(id, userId);
-//    }
-//
-//    @PutMapping("{id}/removeUser")
-//    @Operation(summary = "Remove user from file", description = "Provide file `id` and user `id` to remove")
-//    @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
-//    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-//    public void removeUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
-//        userService.removeUser(id, userId);
-//    }
-
-//    @GetMapping("tasks/{id}")
-//    @Operation(summary = "Get files by user id")
-//    @ApiResponse(responseCode = "200", description = "Request succeed", content = @Content)
-//    public Optional<List<File>> getEmployeeTasksByID(@PathVariable Long id) {
-//        return userService.getUserFiles(id);
-//    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -1,7 +1,6 @@
 package org.pavlov.service;
 
 import lombok.RequiredArgsConstructor;
-import org.pavlov.dto.response.FileInfoDto;
 import org.pavlov.dto.response.FileVersionInfoDto;
 import org.pavlov.mapper.FileVersionMapper;
 import org.pavlov.model.FileVersion;
