@@ -22,23 +22,23 @@ spring:
           new_generator_mappings: false
     show-sql: true
 
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          issuer-uri: http://localhost:8080/realms/Demo-realm
-#springdoc:
-#  swagger-ui:
-#    oauth:
-#      client-id: springboot-microservice
-#      client-secret: QTEqwJp5740HihWQb2smtFZtlC26vkOe
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/dms-spring-realm
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: springboot-microservice
+      client-secret: QTEqwJp5740HihWQb2smtFZtlC26vkOe
 
-keycloak:
-  realm: Demo-realm
-  auth-server-url: http://localhost:8081
-  resource: springboot-microservice
-  credentials:
-    secret: QTEqwJp5740HihWQb2smtFZtlC26vkOe
+#keycloak:
+#  realm: Demo-realm
+#  auth-server-url: http://localhost:8081
+#  resource: springboot-microservice
+#  credentials:
+#    secret: QTEqwJp5740HihWQb2smtFZtlC26vkOe
 
 logging:
   level:

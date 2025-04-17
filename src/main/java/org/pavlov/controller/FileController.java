@@ -156,12 +156,12 @@ public class FileController {
         return fileVersionService.getAllFileVersionsByFileId(pageable, id);
     }
 
-    @GetMapping("/{id}/versions/{versionId}")
+    @GetMapping("/{id}/versions/{version}")
     @Operation(summary = "Get specific file version", description = "Get a specific version of a file")
     @ApiResponse(responseCode = "200", description = "OK",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileVersionInfoDto.class)))
-    public FileVersionInfoDto getFileVersion(@PathVariable Long id, @PathVariable Long versionId) {
-        return fileVersionService.getFileVersionInfo(id, versionId);
+    public FileVersionInfoDto getFileVersion(@PathVariable Long id, @PathVariable Long version) {
+        return fileVersionService.getFileVersionInfo(id, version);
     }
 
     @PatchMapping("/{id}/versions/{version}/restore")
