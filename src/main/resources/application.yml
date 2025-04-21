@@ -30,15 +30,22 @@ spring:
 springdoc:
   swagger-ui:
     oauth:
-      client-id: springboot-microservice
-      client-secret: QTEqwJp5740HihWQb2smtFZtlC26vkOe
+      client-id: dms-spring-client-id
+      client-secret: aMfTPmGMQ0K6sxs0zTyqeV3pkAejkq8p
+      use-pkce-with-authorization-code-grant: false
+      scopes: openid,profile,roles
+      additional-query-string-params:
+        kc_idp_hint:
+    display-oauth2-login: true
 
-#keycloak:
-#  realm: Demo-realm
-#  auth-server-url: http://localhost:8081
-#  resource: springboot-microservice
-#  credentials:
-#    secret: QTEqwJp5740HihWQb2smtFZtlC26vkOe
+
+keycloak:
+  realm: dms-spring-realm
+  auth-server-url: http://localhost:8080
+  resource: dms-spring-client-id
+  credentials:
+    secret: aMfTPmGMQ0K6sxs0zTyqeV3pkAejkq8p
+  cors: true
 
 logging:
   level:

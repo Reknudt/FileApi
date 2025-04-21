@@ -16,9 +16,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -29,18 +31,41 @@ public class SpringSecurityConfiguration {
 
     interface AuthoritiesConverter extends Converter<Map<String, Object>, Collection<GrantedAuthority>> {}
 
+//    @Bean
+//    AuthoritiesConverter realmRolesAuthoritiesConverter() {
+//        return claims -> {
+//            final var resourceAccess = Optional.ofNullable((Map<String, Object>) claims.get("resource_access"));
+//            final var client_content =
+//                    resourceAccess.flatMap(map -> Optional.ofNullable((Map<String, Object>) map.get("dms-spring-client-id")));
+//            final var roles =
+//                    client_content.flatMap(map -> Optional.ofNullable((List<String>) map.get("roles")));
+//            return roles.map(List::stream).orElse(Stream.empty()).map(SimpleGrantedAuthority::new)
+//                    .map(GrantedAuthority.class::cast).toList();
+//        };
+//    }
+
     @Bean
     AuthoritiesConverter realmRolesAuthoritiesConverter() {
         return claims -> {
-            final var resourceAccess = Optional.ofNullable((Map<String, Object>) claims.get("resource_access"));
-            final var client_content =
-                    resourceAccess.flatMap(map -> Optional.ofNullable((Map<String, Object>) map.get("example-client")));
-            final var roles =
-                    client_content.flatMap(map -> Optional.ofNullable((List<String>) map.get("roles")));
-            return roles.map(List::stream).orElse(Stream.empty()).map(SimpleGrantedAuthority::new)
-                    .map(GrantedAuthority.class::cast).toList();
+            // 1. Получаем клиентские роли
+            List<String> clientRoles = Optional.ofNullable((Map<String, Object>) claims.get("resource_access"))
+                    .map(ra -> (Map<String, Object>) ra.get("dms-spring-client-id"))
+                    .map(c -> (List<String>) c.get("roles"))
+                    .orElse(Collections.emptyList());
+
+            // 2. Получаем realm-роли (опционально)
+            List<String> realmRoles = Optional.ofNullable((Map<String, Object>) claims.get("realm_access"))
+                    .map(ra -> (List<String>) ra.get("roles"))
+                    .orElse(Collections.emptyList());
+
+            // 3. Преобразуем в GrantedAuthority
+            return Stream.concat(clientRoles.stream(), realmRoles.stream())
+                    .map(role -> "ROLE_" + role.toUpperCase()) // Префикс ROLE_ обязателен для hasRole()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
         };
     }
+
 
     @Bean
     JwtAuthenticationConverter authenticationConverter(
@@ -70,11 +95,16 @@ public class SpringSecurityConfiguration {
 //            requests.requestMatchers("/api/v1/employees/**").hasAuthority("user");
 //            requests.requestMatchers("/api/v1/employees/**").access(AuthorizationManagers
 //                    .allOf(AuthorityAuthorizationManager.hasAuthority("user"), AuthorityAuthorizationManager.hasAuthority("admin")));
-//            requests.requestMatchers("/api/v1/**").authenticated();
-            requests.anyRequest().permitAll();
-        });
 
+//            requests.requestMatchers("/api/**").authenticated();
+
+            requests.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll();
+            requests.anyRequest().authenticated();
+
+//            requests.anyRequest().permitAll();
+        });
         return http.build();
     }
+
 
 }

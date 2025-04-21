@@ -6,12 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="91b4f669-08cf-49d6-aa8d-bd9275a504d0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/config/OpenAPISecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/config/OpenAPISecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/config/SpringSecurityConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/config/SpringSecurityConfiguration.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/controller/FileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/controller/FileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/service/FileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/service/FileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/pavlov/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/pavlov/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
     </list>
-    <list id="9286043d-d8a9-4908-a96c-a23bf1d09eb4" name="local" comment="" />
+    <list id="9286043d-d8a9-4908-a96c-a23bf1d09eb4" name="local" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,12 +24,17 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Record" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -42,6 +50,22 @@
   }
 }</component>
   <component name="GradleModuleStateConfig" initialized="true" />
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/.idea/workspace.xml">
+      <ranges>
+        <range start1="8" end1="8" start2="8" end2="10" changelist="91b4f669-08cf-49d6-aa8d-bd9275a504d0" />
+        <range start1="9" end1="12" start2="11" end2="15" changelist="91b4f669-08cf-49d6-aa8d-bd9275a504d0" />
+        <range start1="13" end1="14" start2="16" end2="16" changelist="91b4f669-08cf-49d6-aa8d-bd9275a504d0" />
+        <range start1="23" end1="24" start2="25" end2="25" changelist="91b4f669-08cf-49d6-aa8d-bd9275a504d0" />
+        <range start1="25" end1="25" start2="26" end2="27" changelist="91b4f669-08cf-49d6-aa8d-bd9275a504d0" />
+        <range start1="44" end1="44" start2="46" end2="60" changelist="91b4f669-08cf-49d6-aa8d-bd9275a504d0" />
+        <range start1="61" end1="61" start2="77" end2="78" changelist="9286043d-d8a9-4908-a96c-a23bf1d09eb4" />
+        <range start1="75" end1="75" start2="92" end2="94" changelist="9286043d-d8a9-4908-a96c-a23bf1d09eb4" />
+        <range start1="138" end1="139" start2="157" end2="214" changelist="9286043d-d8a9-4908-a96c-a23bf1d09eb4" />
+        <range start1="170" end1="171" start2="245" end2="253" changelist="9286043d-d8a9-4908-a96c-a23bf1d09eb4" />
+      </ranges>
+    </file>
+  </component>
   <component name="MavenRunner">
     <option name="skipTests" value="true" />
   </component>
@@ -53,26 +77,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;AMPLICODE_MAP_STRUCT_SUGGESTION_DISMISS&quot;: &quot;true&quot;,
-    &quot;Maven.FileApi [clean,package].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.FileApi [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.FileApi [package].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "AMPLICODE_MAP_STRUCT_SUGGESTION_DISMISS": "true",
+    "Maven.FileApi [clean,package].executor": "Run",
+    "Maven.FileApi [clean].executor": "Run",
+    "Maven.FileApi [package].executor": "Run",
+    "Maven.FileApi [validate].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot Application.Main.executor": "Run",
+    "git-widget-placeholder": "feature/auth",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="org.pavlov.dto.response" />
+      <recent name="org.pavlov.mapper" />
+      <recent name="org.pavlov.model" />
       <recent name="org.pavlov.service" />
       <recent name="org.pavlov.controller" />
     </key>
@@ -136,7 +163,63 @@
       <option name="project" value="LOCAL" />
       <updated>1744101121328</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Add GetAll paging">
+      <option name="closed" value="true" />
+      <created>1744102897325</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1744102897325</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Add File API to rename and content updates">
+      <option name="closed" value="true" />
+      <created>1744112921745</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1744112921745</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Add FileVersions (version not saving in table)">
+      <option name="closed" value="true" />
+      <created>1744180736129</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1744180736129</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Fixed versions, added notes">
+      <option name="closed" value="true" />
+      <created>1744271413711</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1744271413711</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Added delete methods + started FileStatus">
+      <option name="closed" value="true" />
+      <created>1744282172770</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1744282172770</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Finished delete, notes and statuses">
+      <option name="closed" value="true" />
+      <created>1744353627143</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1744353627143</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Preparations before security auth">
+      <option name="closed" value="true" />
+      <created>1744901631915</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1744901631915</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -150,7 +233,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="feature/auth" />
                       </list>
                     </value>
                   </entry>
