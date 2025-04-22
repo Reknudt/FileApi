@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.pavlov.model.User;
 import org.pavlov.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,25 +33,15 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create user")
-    @ApiResponse(responseCode = "201", description = "User created", content = @Content)
-    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-    public void createEmployee(@RequestBody @Valid User userRequest) {
-        userService.createUser(userRequest);
-    }
-
-    @PutMapping("/{id}")
-//    @PreAuthorize("hasAuthority('user')")
-    @Operation(summary = "Update user")
-    @ApiResponse(responseCode = "200", description = "User updated", content = @Content)
-    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-    public void updateEmployee(@PathVariable Long id, @RequestBody @Valid User userRequest) {
-        userService.updateUser(id, userRequest);
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "Get user info by id")
+    public User getByUserID(@PathVariable Long id) {
+        return userService.getUser(id);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all users", description = "Provide all the users")
     @ApiResponse(responseCode = "200", description = "OK",
             content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = User.class))))
@@ -60,13 +51,27 @@ public class UserController {
         return userService.getAllUsers(page, size);
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get user info by id")
-    public User getByUserID(@PathVariable Long id) {
-        return userService.getUser(id);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create user")
+    @ApiResponse(responseCode = "201", description = "User created", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
+    @ApiResponse(responseCode = "409", description = "User already exists", content = @Content)
+    public void createUser(@RequestBody @Valid User userRequest) {
+        userService.createUser(userRequest);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "Update user")
+    @ApiResponse(responseCode = "200", description = "User updated", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
+    public void updateUser(@PathVariable Long id, @RequestBody @Valid User userRequest) {
+        userService.updateUser(id, userRequest);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete user", description = "Provide user id to delete")
     @ApiResponse(responseCode = "204", description = "User deleted", content = @Content)

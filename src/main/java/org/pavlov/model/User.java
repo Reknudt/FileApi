@@ -2,19 +2,14 @@ package org.pavlov.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -35,12 +30,25 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(description = "Keycloak ID (generating automatically)")
+    private String keycloakId;
+
     @Schema(description = "User name")
+//    @NotNull(message = "Name must be not null.")
+    @Size(max = 255, message = "Name length must be smaller than 255 symbols.")
+    private String username;
+
+    @Schema(description = "First name")
     @NotNull(message = "Name must be not null.")
     @Size(max = 255, message = "Name length must be smaller than 255 symbols.")
-    private String name;
+    private String firstName;
 
-    @Schema(description = "User's encrypted password")
+    @Schema(description = "Second name")
+    @NotNull(message = "Name must be not null.")
+    @Size(max = 255, message = "Name length must be smaller than 255 symbols.")
+    private String lastName;
+
+    @Schema(description = "User's password")
     @NotNull(message = "Password must be not null.")
     private String password;
 

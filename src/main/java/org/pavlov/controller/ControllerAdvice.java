@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.pavlov.dto.response.ErrorResponse;
 import org.pavlov.exception.FileNotFoundException;
 import org.pavlov.exception.ResourceNotFoundException;
+import org.pavlov.exception.UserAlreadyExistsException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,12 @@ public class ControllerAdvice {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
-
         return ResponseEntity.badRequest().body(errors);
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserExists(UserAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
 }

@@ -97,11 +97,11 @@ public class SpringSecurityConfiguration {
 //                    .allOf(AuthorityAuthorizationManager.hasAuthority("user"), AuthorityAuthorizationManager.hasAuthority("admin")));
 
 //            requests.requestMatchers("/api/**").authenticated();
+//            requests.requestMatchers("/api/users").permitAll();
+//            requests.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll();
+//            requests.anyRequest().authenticated();
 
-            requests.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll();
-            requests.anyRequest().authenticated();
-
-//            requests.anyRequest().permitAll();
+            requests.anyRequest().permitAll();
         });
         return http.build();
     }

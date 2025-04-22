@@ -46,6 +46,9 @@ keycloak:
   credentials:
     secret: aMfTPmGMQ0K6sxs0zTyqeV3pkAejkq8p
   cors: true
+keycloak-admin:
+  username: admin1
+  password: admin1
 
 logging:
   level:
