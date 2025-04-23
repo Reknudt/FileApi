@@ -16,6 +16,7 @@ import org.pavlov.mapper.UserMapper;
 import org.pavlov.model.File;
 import org.pavlov.model.User;
 import org.pavlov.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static org.pavlov.util.Constant.CLIENTID;
 import static org.pavlov.util.Constant.ERROR_FORBIDDEN;
+import static org.pavlov.util.Constant.REALM;
 
 @Service
 @AllArgsConstructor
@@ -44,7 +47,7 @@ public class UserService {
 
     @Transactional
     public void createUser(User user) {
-        List<UserRepresentation> existingUsers = keycloakAdminClient.realm("dms-spring-realm")
+        List<UserRepresentation> existingUsers = keycloakAdminClient.realm(REALM)
                 .users()
                 .search(user.getEmail());
         if (!existingUsers.isEmpty() || userRepository.existsByEmail(user.getEmail()))
@@ -64,7 +67,7 @@ public class UserService {
         keycloakUser.setEmailVerified(true);
         keycloakUser.setRequiredActions(Collections.emptyList());
 
-        Response response = keycloakAdminClient.realm("dms-spring-realm")
+        Response response = keycloakAdminClient.realm(REALM)
                 .users()
                 .create(keycloakUser);
 
@@ -82,14 +85,14 @@ public class UserService {
         credential.setValue(user.getPassword());
         credential.setTemporary(false);
 
-        keycloakAdminClient.realm("dms-spring-realm")
+        keycloakAdminClient.realm(REALM)
                 .users()
                 .get(userId)
                 .resetPassword(credential);
 
         try {
-            String clientId = "dms-spring-client-id";
-            List<ClientRepresentation> foundClients = keycloakAdminClient.realm("dms-spring-realm")
+            String clientId = CLIENTID;
+            List<ClientRepresentation> foundClients = keycloakAdminClient.realm(REALM)
                     .clients()
                     .findByClientId(clientId);
 
@@ -98,7 +101,7 @@ public class UserService {
             }
 
             String internalClientId = foundClients.get(0).getId();
-            ClientResource clientResource = keycloakAdminClient.realm("dms-spring-realm")
+            ClientResource clientResource = keycloakAdminClient.realm(REALM)
                     .clients()
                     .get(internalClientId);
 
@@ -106,7 +109,7 @@ public class UserService {
                     .get("USER")
                     .toRepresentation();
 
-            keycloakAdminClient.realm("dms-spring-realm")
+            keycloakAdminClient.realm(REALM)
                     .users()
                     .get(userId)
                     .roles()
@@ -147,7 +150,7 @@ public class UserService {
             fileService.deleteAll(file.getId(), keycloakId);//
         }
 
-        keycloakAdminClient.realm("dms-spring-realm")
+        keycloakAdminClient.realm(REALM)
                 .users()
                 .delete(user.getKeycloakId());
         userRepository.deleteById(id);
