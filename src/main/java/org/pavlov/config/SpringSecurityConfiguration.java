@@ -33,11 +33,6 @@ public class SpringSecurityConfiguration {
 
     interface AuthoritiesConverter extends Converter<Map<String, Object>, Collection<GrantedAuthority>> {}
 
-//    @Bean
-//    public KeycloakSecurityContext keycloakSecurityContext(KeycloakAuthenticationToken authentication) {
-//        return authentication.getAccount().getKeycloakSecurityContext();
-//    }
-
     @Bean
     AuthoritiesConverter realmRolesAuthoritiesConverter() {
         return claims -> {
@@ -80,18 +75,11 @@ public class SpringSecurityConfiguration {
         }).csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(requests -> {
-//            requests.requestMatchers("/api/v1/employee/**").hasAnyAuthority("user", "admin");
-//            requests.requestMatchers("/api/v1/tasks/**").hasAuthority("admin");
-//            requests.requestMatchers("/api/v1/employees/**").hasAuthority("user");
-//            requests.requestMatchers("/api/v1/employees/**").access(AuthorizationManagers
-//                    .allOf(AuthorityAuthorizationManager.hasAuthority("user"), AuthorityAuthorizationManager.hasAuthority("admin")));
-
-//            requests.requestMatchers("/api/**").authenticated();
-//            requests.requestMatchers("/api/users").permitAll();
-//            requests.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll();
+            requests.requestMatchers("/api/**").authenticated();
+            requests.requestMatchers("/api/users").permitAll();
+            requests.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll();
 //            requests.anyRequest().authenticated();
-
-            requests.anyRequest().permitAll();
+//            requests.anyRequest().permitAll();
         });
         return http.build();
     }

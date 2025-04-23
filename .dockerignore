@@ -1,0 +1,6 @@
+.git/
+target/
+*.iml
+.idea/
+*.md
+!target/FileApi-1.0-SNAPSHOT.jar

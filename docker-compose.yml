@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: dpspring-pg-16
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpass
+      POSTGRES_DB: dpspring
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pguser -d dpspring"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin1
+      KEYCLOAK_ADMIN_PASSWORD: admin1
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/dpspring
+      KC_DB_USERNAME: pguser
+      KC_DB_PASSWORD: pgpass
+      KC_HOSTNAME: localhost
+    ports:
+      - "8080:8080"
+    command: ["start-dev"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/ || exit 1" ]
+      interval: 15s
+      timeout: 15s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-app
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dpspring
+      SPRING_DATASOURCE_USERNAME: pguser
+      SPRING_DATASOURCE_PASSWORD: pgpass
+      KEYCLOAK_URL: http://keycloak:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+#  - ./target:/DPspring/target

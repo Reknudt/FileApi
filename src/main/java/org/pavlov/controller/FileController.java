@@ -95,7 +95,7 @@ public class FileController {
         return fileService.getFileInfo(id);
     }
 
-    @GetMapping("/user/{userId}")               //???????
+    @GetMapping("/user/{userId}")
     @Operation(summary = "Get files info by userId", description = "Provide `id` and `userId` to get info about user's files")
     @ApiResponse(responseCode = "200", description = "OK",
             content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FileInfoDto.class))))
@@ -104,8 +104,8 @@ public class FileController {
     }
 
     @GetMapping
-//    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get all files", description = "Provide all the files (for admin only)")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all files", description = "Provide all the files")
     @ApiResponse(responseCode = "200", description = "OK",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileInfoDto.class)))
     public Page<FileInfoDto> getAllFilesInfo(
