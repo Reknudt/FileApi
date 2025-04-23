@@ -13,6 +13,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.pavlov.exception.ResourceNotFoundException;
 import org.pavlov.exception.UserAlreadyExistsException;
 import org.pavlov.mapper.UserMapper;
+import org.pavlov.model.File;
 import org.pavlov.model.User;
 import org.pavlov.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
+import static org.pavlov.util.Constant.ERROR_FORBIDDEN;
 
 @Service
 @AllArgsConstructor
@@ -31,6 +35,7 @@ public class UserService {
     private final Keycloak keycloakAdminClient;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final FileService fileService;
 
 //    @Value("${keycloak.resource}")
 //    private String CLIENTID;
@@ -46,6 +51,7 @@ public class UserService {
             throw new UserAlreadyExistsException("User with email " + user.getEmail() + " already exists");
 
         UserRepresentation keycloakUser = new UserRepresentation();
+
         if (user.getUsername() != null) {
             keycloakUser.setUsername(user.getUsername());
         } else {
@@ -82,12 +88,6 @@ public class UserService {
                 .resetPassword(credential);
 
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        try {
             String clientId = "dms-spring-client-id";
             List<ClientRepresentation> foundClients = keycloakAdminClient.realm("dms-spring-realm")
                     .clients()
@@ -121,9 +121,9 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(Long id, User userRequest) {
+    public void updateUser(Long id, User userRequest, String keycloakId) {
+        checkAccess(id, keycloakId);
         User user = findByIdOrThrow(id);
-
         user = userMapper.updateUserFromEntity(userRequest);
         userRepository.save(user);
     }
@@ -139,13 +139,17 @@ public class UserService {
         return usersPage.getContent();
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(Long id, String keycloakId) {
+        checkAccess(id, keycloakId);
         User user = findByIdOrThrow(id);
+        List<File> files = user.getFiles();
+        for (File file : files) {
+            fileService.deleteAll(file.getId(), keycloakId);//
+        }
 
         keycloakAdminClient.realm("dms-spring-realm")
                 .users()
                 .delete(user.getKeycloakId());
-
         userRepository.deleteById(id);
     }
 
@@ -153,5 +157,18 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("User " + id + " not found"));
+    }
+
+    public User findByKeycloakIdOrThrow(String id) {
+        return userRepository.findByKeycloakId(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User with keycloakId " + id + " not found"));
+    }
+
+    public void checkAccess(Long userId, String keycloakUserId) {
+        User user = findByIdOrThrow(userId);
+        if (!Objects.equals(user.getKeycloakId(), keycloakUserId)) {
+            throw new SecurityException(ERROR_FORBIDDEN );
+        }
     }
 }

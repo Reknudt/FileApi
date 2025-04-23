@@ -17,14 +17,18 @@ public class FileVersionService {
 
     private final FileVersionRepository fileVersionRepository;
     private final FileVersionMapper fileVersionMapper;
+    private final FileService fileService;
 
+    public Page<FileVersionInfoDto> getAllFileVersionsByFileId(Pageable pageable, Long fileId, String keycloakId) {
+        fileService.checkFileAccess(fileId, keycloakId);
 
-    public Page<FileVersionInfoDto> getAllFileVersionsByFileId(Pageable pageable, Long fileId) {
         Page<FileVersion> fileVersions = fileVersionRepository.findAllByFileId(pageable, fileId);
         return fileVersions.map(fileVersionMapper::entityToFileVersionInfoDto);
     }
 
-    public FileVersionInfoDto getFileVersionInfo(Long fileId, long version) {
+    public FileVersionInfoDto getFileVersionInfo(Long fileId, long version, String keycloak) {  //&&&&&&
+        fileService.checkFileAccess(fileId, keycloak);
+
         FileVersion fileVersion = fileVersionRepository.findById(fileId)
                 .orElseThrow(() -> new RuntimeException("FileVersion not found"));
         return fileVersionMapper.entityToFileVersionInfoDto(fileVersion);

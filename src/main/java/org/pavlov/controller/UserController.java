@@ -9,9 +9,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.pavlov.model.User;
+import org.pavlov.service.FileService;
 import org.pavlov.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,8 +69,9 @@ public class UserController {
     @Operation(summary = "Update user")
     @ApiResponse(responseCode = "200", description = "User updated", content = @Content)
     @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-    public void updateUser(@PathVariable Long id, @RequestBody @Valid User userRequest) {
-        userService.updateUser(id, userRequest);
+    public void updateUser(@PathVariable Long id, @RequestBody @Valid User userRequest, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
+        userService.updateUser(id, userRequest, keycloakId);
     }
 
     @DeleteMapping("/{id}")
@@ -75,7 +79,8 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete user", description = "Provide user id to delete")
     @ApiResponse(responseCode = "204", description = "User deleted", content = @Content)
-    public void deleteUserByID(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public void deleteUserByID(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
+        userService.deleteUser(id, keycloakId);
     }
 }

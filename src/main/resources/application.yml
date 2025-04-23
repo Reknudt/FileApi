@@ -21,6 +21,8 @@ spring:
         id:
           new_generator_mappings: false
     show-sql: true
+  messages:
+    encoding: UTF-8
 
   security:
     oauth2:

@@ -38,6 +38,20 @@ public class ControllerAdvice {
                 .build();
     }
 
+    @ExceptionHandler(SecurityException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleSecurityException(SecurityException e) {
+        String localizedMessage = messageSource.getMessage(
+                e.getMessage(),
+                new Object[]{e.getMessage()},
+                LocaleContextHolder.getLocale());
+
+        return ErrorResponse.builder()
+                .status(HttpStatus.FORBIDDEN.value())
+                .message(localizedMessage)
+                .build();
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {

@@ -23,7 +23,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class File implements Serializable {
     @ManyToMany
     @JoinTable(
             name = "file_user",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "file_id"))
+            joinColumns = @JoinColumn(name = "file_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users;
 }

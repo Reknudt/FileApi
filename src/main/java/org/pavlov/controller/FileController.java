@@ -24,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -60,9 +62,11 @@ public class FileController {
     public ResponseEntity<PageFileResponse> getFileContentByPage(
             @PathVariable Long id,
             @RequestParam(defaultValue = "1024") int pageSize,
-            @RequestParam(defaultValue = "1") int pageNumber) {
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @AuthenticationPrincipal Jwt jwt) {
         try {
-            PageFileResponse response = fileService.getFileContentByPage(id, pageSize, pageNumber);
+            String keycloakId = jwt.getSubject();
+            PageFileResponse response = fileService.getFileContentByPage(id, pageSize, pageNumber, keycloakId);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
@@ -70,10 +74,10 @@ public class FileController {
     }
 
     @GetMapping("/{id}")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "Get file download by id", description = "Provide id to download file")
-    public ResponseEntity<byte[]> getById(@PathVariable Long id) {
-        File file = fileService.getFile(id);
+    @Operation(summary = "Download file by id", description = "Provide id to download file")
+    public ResponseEntity<byte[]> getById(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
+        File file = fileService.getFile(id, keycloakId);
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(file.getType()))
@@ -85,7 +89,7 @@ public class FileController {
     }
 
     @GetMapping("/{id}/about")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get info about file", description = "Provide file `id`")
     public FileInfoDto getFileInfoById(@PathVariable Long id) {
         return fileService.getFileInfo(id);
@@ -99,8 +103,8 @@ public class FileController {
         return fileService.getFilesByUserId(userId);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
+//    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get all files", description = "Provide all the files (for admin only)")
     @ApiResponse(responseCode = "200", description = "OK",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileInfoDto.class)))
@@ -114,12 +118,14 @@ public class FileController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Save file", description = "Provide file to save")
+    @Operation(summary = "Save file", description = "Upload file to save (only for authenticated users)")
     public ResponseEntity<ResponseMessage> handleFileUpload(@RequestParam("file") MultipartFile file,
-                                                            @RequestParam("dateOfCreation") Optional<LocalDateTime> dateTime) {
+                                                            @RequestParam("dateOfCreation") Optional<LocalDateTime> dateTime,
+                                                            @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.saveFile(file, dateTime);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Uploaded file successfully: " + file.getOriginalFilename()));
+            fileService.saveFile(file, dateTime, keycloakId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("File uploaded successfully: " + file.getOriginalFilename()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
                     new ResponseMessage("Could not upload the file: " + file.getOriginalFilename() + "!"));
@@ -132,16 +138,20 @@ public class FileController {
     @Operation(summary = "Assign user to file", description = "Provide file `id` and `userId` to assign")
     @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
     @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-    public void assignUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
-        fileService.assignUser(id, userId);
+    public void assignUser(@PathVariable Long id, @RequestParam @Valid Long userId,
+                           @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
+        fileService.assignUser(id, userId, keycloakId);
     }
 
     @PutMapping("{id}/removeUser")
     @Operation(summary = "Remove user from file", description = "Provide file `id` and `userId` to remove")
     @ApiResponse(responseCode = "200", description = "File access updated", content = @Content)
     @ApiResponse(responseCode = "400", description = "Invalid form filling", content = @Content)
-    public void removeUser(@PathVariable Long id, @RequestParam @Valid Long userId) {
-        fileService.removeUser(id, userId);
+    public void removeUser(@PathVariable Long id, @RequestParam @Valid Long userId,
+                           @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
+        fileService.removeUser(id, userId, keycloakId);
     }
 
     //---- VERSIONS
@@ -153,24 +163,28 @@ public class FileController {
     public Page<FileVersionInfoDto> getAllFileVersions(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam @Valid Long id) {
+            @RequestParam @Valid Long id,
+            @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         Pageable pageable = PageRequest.of(page, size);
-        return fileVersionService.getAllFileVersionsByFileId(pageable, id);
+        return fileVersionService.getAllFileVersionsByFileId(pageable, id, keycloakId);
     }
 
     @GetMapping("/{id}/versions/{version}")
     @Operation(summary = "Get specific file version", description = "Get a specific version of a file")
     @ApiResponse(responseCode = "200", description = "OK",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileVersionInfoDto.class)))
-    public FileVersionInfoDto getFileVersion(@PathVariable Long id, @PathVariable Long version) {
-        return fileVersionService.getFileVersionInfo(id, version);
+    public FileVersionInfoDto getFileVersion(@PathVariable Long id, @PathVariable Long version, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
+        return fileVersionService.getFileVersionInfo(id, version, keycloakId);
     }
 
     @PatchMapping("/{id}/versions/{version}/restore")
     @Operation(summary = "Restore file version", description = "Provide fileId and version to restore a specific version of a file")
-    public ResponseEntity<ResponseMessage> restoreFileVersion(@PathVariable Long id, @PathVariable Long version) {
+    public ResponseEntity<ResponseMessage> restoreFileVersion(@PathVariable Long id, @PathVariable Long version, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.restoreFileVersion(id, version);
+            fileService.restoreFileVersion(id, version, keycloakId);
             return ResponseEntity.ok(new ResponseMessage("File version restored successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
@@ -181,9 +195,10 @@ public class FileController {
 
     @PatchMapping("/{id}/restore")
     @Operation(summary = "Restore file", description = "Provide fileId to restore deleted version")
-    public ResponseEntity<ResponseMessage> restoreFile(@PathVariable Long id) {
+    public ResponseEntity<ResponseMessage> restoreFile(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.restoreFile(id);
+            fileService.restoreFile(id, keycloakId);
             return ResponseEntity.ok(new ResponseMessage("File restored successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
@@ -198,9 +213,11 @@ public class FileController {
             @RequestParam int pageNumber,
             @RequestParam(defaultValue = "1024") int pageSize,
             @RequestParam("note") Optional<String> note,
-            @RequestBody String newContent) {
+            @RequestBody String newContent,
+            @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.updateFileContentOnPage(id, pageNumber, pageSize, note, newContent);
+            fileService.updateFileContentOnPage(id, pageNumber, pageSize, note, newContent, keycloakId);
             return ResponseEntity.ok(new ResponseMessage("File content updated successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
@@ -212,9 +229,11 @@ public class FileController {
     public ResponseEntity<ResponseMessage> updateFileName(
             @PathVariable Long id,
             @RequestParam("note") Optional<String> note,
-            @RequestBody String newFileName) {
+            @RequestBody String newFileName,
+            @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.updateFileName(id, note, newFileName);
+            fileService.updateFileName(id, note, newFileName, keycloakId);
             return ResponseEntity.ok(new ResponseMessage("File name updated to " + newFileName + " successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
@@ -225,9 +244,10 @@ public class FileController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete file", description = "Provide file id to delete file")
     @ApiResponse(responseCode = "204", description = "File deleted", content = @Content)
-    public ResponseEntity<ResponseMessage> deleteById(@PathVariable Long id) {
+    public ResponseEntity<ResponseMessage> deleteById(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.deleteFile(id);
+            fileService.deleteFile(id, keycloakId);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("File with Id " + id + " successfully deleted"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage("Could not delete the file with Id " + id + "!"));
@@ -238,9 +258,12 @@ public class FileController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete file version", description = "Provide file `id` and `version` to delete FileVersion")
     @ApiResponse(responseCode = "204", description = "File deleted", content = @Content)
-    public ResponseEntity<ResponseMessage> deleteFileVersionById(@PathVariable("id") Long id, @PathVariable("version") long version) {
+    public ResponseEntity<ResponseMessage> deleteFileVersionById(@PathVariable("id") Long id,
+                                                                 @PathVariable("version") long version,
+                                                                 @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.deleteFileVersion(id, version);
+            fileService.deleteFileVersion(id, version, keycloakId);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseMessage("FileVersion with version " + version + " of file " + id + " successfully deleted"));
         } catch (Exception e) {
@@ -253,9 +276,10 @@ public class FileController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete all file versions", description = "Provide file `id` and `version` to delete FileVersion")
     @ApiResponse(responseCode = "204", description = "File deleted", content = @Content)
-    public ResponseEntity<ResponseMessage> deleteFileVersion(@PathVariable Long id) {
+    public ResponseEntity<ResponseMessage> deleteFileVersion(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.deleteFileVersions(id);
+            fileService.deleteFileVersions(id, keycloakId);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseMessage("FileVersions of file " + id + " successfully deleted"));
         } catch (Exception e) {
@@ -268,9 +292,10 @@ public class FileController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete file and its versions")
     @ApiResponse(responseCode = "204", description = "File deleted", content = @Content)
-    public ResponseEntity<ResponseMessage> deleteFileAndVersions(@PathVariable Long id) {
+    public ResponseEntity<ResponseMessage> deleteFileAndVersions(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
         try {
-            fileService.deleteAll(id);
+            fileService.deleteAll(id, keycloakId);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseMessage("File " + id + " and its versions successfully deleted"));
         } catch (Exception e) {

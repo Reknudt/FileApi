@@ -55,4 +55,13 @@ version BIGINT NOT NULL,
 note VARCHAR,
 CONSTRAINT file_id_fk FOREIGN KEY (file_id) REFERENCES file (id)
 );
+
+insert into "user"(keycloak_id, username, first_name, last_name, email, phone, password, date_of_birth) 
+	values ('6b44fed2-99c2-453a-8e90-61694dccda49', 'victorkub@gmai.com', 'Victor', 'Kub', 'victorkub@gmai.com', '+375299879871', 'user1', '2004-04-21')
+
+insert into "user"(keycloak_id, username, first_name, last_name, email, phone, password, date_of_birth) 
+	values ('e11e4628-1770-4934-bf98-9346296663cd', 'pochta.navsegda@mail.ru', 'Nikita', 'Smolskiy', 'pochta.navsegda@mail.ru', '+375291232341', 'user2', '2000-02-20')
+	
+insert into "user"(keycloak_id, username, first_name, last_name, email, phone, password, date_of_birth) 
+	values ('68fdcc70-12c4-4013-b159-4c3343ca88b7', 'kiryl.paulau@softclub.by', 'Kirill', 'Pavlov', 'kiryl.paulau@softclub.by', '+375291344191', 'backenddev', '2004-02-26')
 ```
