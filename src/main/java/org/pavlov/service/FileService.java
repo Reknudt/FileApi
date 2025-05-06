@@ -2,7 +2,6 @@ package org.pavlov.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.keycloak.KeycloakSecurityContext;
 import org.pavlov.dto.response.FileInfoDto;
 import org.pavlov.dto.response.PageFileResponse;
 import org.pavlov.exception.FileNotFoundException;
@@ -27,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.pavlov.util.Constant.ERROR_FORBIDDEN;
@@ -61,14 +61,13 @@ public class FileService {
 
     public File saveFile(MultipartFile file, Optional<LocalDateTime> dateTime, String keycloakId) throws IOException {
 
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         File fileEntity = new File();
         fileEntity.setName(fileName);
         fileEntity.setData(file.getBytes());
         fileEntity.setType(file.getContentType());
         fileEntity.setDateOfCreation(dateTime.orElse(LocalDateTime.now()));
 
-//        User currentUser = userService.findByKeycloakIdOrThrow(keycloakId);
         User currentUser = findUserByKeycloakIdOrThrow(keycloakId);
         fileEntity.setUsers(List.of(currentUser));
 
@@ -90,7 +89,6 @@ public class FileService {
         checkFileAccess(id, keycloakId);
 
         File file = findByIdOrThrow(id);
-//        User newUser = userService.findByIdOrThrow(userId);
         User newUser = findUserByIdOrThrow(userId);
 
         List<User> userList = file.getUsers();
@@ -104,7 +102,6 @@ public class FileService {
         checkFileAccess(id, keycloakId);
 
         File file = findByIdOrThrow(id);
-//        User newUser = userService.findByIdOrThrow(userId);
         User newUser = findUserByIdOrThrow(userId);
 
         List<User> userList = file.getUsers();

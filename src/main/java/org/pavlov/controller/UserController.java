@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.pavlov.model.User;
-import org.pavlov.service.FileService;
 import org.pavlov.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,7 +38,7 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get user info by id")
-    public User getByUserID(@PathVariable Long id) {
+    public User getByUserId(@PathVariable Long id) {
         return userService.getUser(id);
     }
 
@@ -79,7 +78,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete user", description = "Provide user id to delete")
     @ApiResponse(responseCode = "204", description = "User deleted", content = @Content)
-    public void deleteUserByID(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+    public void deleteUserById(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
         userService.deleteUser(id, keycloakId);
     }

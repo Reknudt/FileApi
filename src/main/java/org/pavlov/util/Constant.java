@@ -2,7 +2,6 @@ package org.pavlov.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Constant {

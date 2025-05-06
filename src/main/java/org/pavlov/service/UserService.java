@@ -16,7 +16,6 @@ import org.pavlov.mapper.UserMapper;
 import org.pavlov.model.File;
 import org.pavlov.model.User;
 import org.pavlov.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,11 +39,6 @@ public class UserService {
     private final UserMapper userMapper;
     private final FileService fileService;
 
-//    @Value("${keycloak.resource}")
-//    private String CLIENTID;
-//    @Value("${keycloak.realm}")
-//    private String REALM;
-
     @Transactional
     public void createUser(User user) {
         List<UserRepresentation> existingUsers = keycloakAdminClient.realm(REALM)
@@ -53,19 +47,7 @@ public class UserService {
         if (!existingUsers.isEmpty() || userRepository.existsByEmail(user.getEmail()))
             throw new UserAlreadyExistsException("User with email " + user.getEmail() + " already exists");
 
-        UserRepresentation keycloakUser = new UserRepresentation();
-
-        if (user.getUsername() != null) {
-            keycloakUser.setUsername(user.getUsername());
-        } else {
-            keycloakUser.setUsername(user.getEmail());
-        }
-        keycloakUser.setEmail(user.getEmail());
-        keycloakUser.setFirstName(user.getFirstName());
-        keycloakUser.setLastName(user.getLastName());
-        keycloakUser.setEnabled(true);
-        keycloakUser.setEmailVerified(true);
-        keycloakUser.setRequiredActions(Collections.emptyList());
+        UserRepresentation keycloakUser = getUserRepresentation(user);
 
         Response response = keycloakAdminClient.realm(REALM)
                 .users()
@@ -123,6 +105,23 @@ public class UserService {
         userRepository.save(user);
     }
 
+    private static UserRepresentation getUserRepresentation(User user) {
+        UserRepresentation keycloakUser = new UserRepresentation();
+
+        if (user.getUsername() != null) {
+            keycloakUser.setUsername(user.getUsername());
+        } else {
+            keycloakUser.setUsername(user.getEmail());
+        }
+        keycloakUser.setEmail(user.getEmail());
+        keycloakUser.setFirstName(user.getFirstName());
+        keycloakUser.setLastName(user.getLastName());
+        keycloakUser.setEnabled(true);
+        keycloakUser.setEmailVerified(true);
+        keycloakUser.setRequiredActions(Collections.emptyList());
+        return keycloakUser;
+    }
+
     @Transactional
     public void updateUser(Long id, User userRequest, String keycloakId) {
         checkAccess(id, keycloakId);
@@ -162,16 +161,16 @@ public class UserService {
                         () -> new ResourceNotFoundException("User " + id + " not found"));
     }
 
-    public User findByKeycloakIdOrThrow(String id) {
-        return userRepository.findByKeycloakId(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("User with keycloakId " + id + " not found"));
-    }
+//    public User findByKeycloakIdOrThrow(String id) {  //todo: remove
+//        return userRepository.findByKeycloakId(id)
+//                .orElseThrow(
+//                        () -> new ResourceNotFoundException("User with keycloakId " + id + " not found"));
+//    }
 
     public void checkAccess(Long userId, String keycloakUserId) {
         User user = findByIdOrThrow(userId);
         if (!Objects.equals(user.getKeycloakId(), keycloakUserId)) {
-            throw new SecurityException(ERROR_FORBIDDEN );
+            throw new SecurityException(ERROR_FORBIDDEN);
         }
     }
 }

@@ -9,8 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @RequiredArgsConstructor
 @Service
 public class FileVersionService {
@@ -29,7 +27,7 @@ public class FileVersionService {
     public FileVersionInfoDto getFileVersionInfo(Long fileId, long version, String keycloak) {  //&&&&&&
         fileService.checkFileAccess(fileId, keycloak);
 
-        FileVersion fileVersion = fileVersionRepository.findById(fileId)
+        FileVersion fileVersion = fileVersionRepository.findByIdAndVersion(fileId, version)
                 .orElseThrow(() -> new RuntimeException("FileVersion not found"));
         return fileVersionMapper.entityToFileVersionInfoDto(fileVersion);
     }

@@ -39,7 +39,6 @@ public class File implements Serializable {
 
     @Schema(description = "File data")
     @Column(name = "data", columnDefinition="bytea")
-//    @NotEmpty(message = "File must not be empty.")
     private byte[] data;
 
     @Schema(description = "File name")

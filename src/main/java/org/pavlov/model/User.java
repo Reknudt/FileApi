@@ -34,7 +34,6 @@ public class User implements Serializable {
     private String keycloakId;
 
     @Schema(description = "User name")
-//    @NotNull(message = "Name must be not null.")
     @Size(max = 255, message = "Name length must be smaller than 255 symbols.")
     private String username;
 

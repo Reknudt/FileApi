@@ -9,7 +9,6 @@ import java.util.List;
 public record FileInfoDto(
         Long id,
         String name,
-//        byte[] data,
         String type,
         LocalDateTime dateOfCreation,
         long version,
